@@ -245,108 +245,6 @@
 				)
 			)
 		)
-		(symbol "Connector:TestPoint"
-			(pin_numbers hide)
-			(pin_names
-				(offset 0.762) hide)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "TP"
-				(at 0 6.858 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "TestPoint"
-				(at 0 5.08 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 5.08 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 5.08 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "test point"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "test point tp"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Pin* Test*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "TestPoint_0_1"
-				(circle
-					(center 0 3.302)
-					(radius 0.762)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "TestPoint_1_1"
-				(pin passive line
-					(at 0 0 90)
-					(length 2.54)
-					(name "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-		)
 		(symbol "Connector_Generic:Conn_01x10"
 			(pin_names
 				(offset 1.016) hide)
@@ -2066,12 +1964,12 @@
 				)
 			)
 		)
-		(symbol "Regulator_Switching:LM2596S-5"
+		(symbol "Regulator_Switching:LM2594M-5.0"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "U"
-				(at -10.16 6.35 0)
+				(at -7.62 6.35 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -2079,7 +1977,7 @@
 					(justify left)
 				)
 			)
-			(property "Value" "LM2596S-5"
+			(property "Value" "LM2594M-5.0"
 				(at 0 6.35 0)
 				(effects
 					(font
@@ -2088,8 +1986,8 @@
 					(justify left)
 				)
 			)
-			(property "Footprint" "Package_TO_SOT_SMD:TO-263-5_TabPin3"
-				(at 1.27 -6.35 0)
+			(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+				(at 5.08 -6.35 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -2099,7 +1997,16 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm2596.pdf"
+			(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm2594.pdf"
+				(at 0 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "5.0V, 0.5A SIMPLE SWITCHER® Step-Down Voltage Regulator, Maximum VIN 45V, SOIC-8"
 				(at 0 0 0)
 				(effects
 					(font
@@ -2108,7 +2015,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "5V 3A Step-Down Voltage Regulator, TO-263"
+			(property "ki_keywords" "buck converter regulator step-down voltage simple switcher fixed"
 				(at 0 0 0)
 				(effects
 					(font
@@ -2117,7 +2024,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "Step-Down Voltage Regulator 5V 3A"
+			(property "ki_fp_filters" "SOIC*3.9x4.9mm*"
 				(at 0 0 0)
 				(effects
 					(font
@@ -2126,19 +2033,10 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "TO?263*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "LM2596S-5_0_1"
+			(symbol "LM2594M-5.0_0_1"
 				(rectangle
-					(start -10.16 5.08)
-					(end 10.16 -5.08)
+					(start -7.62 5.08)
+					(end 7.62 -5.08)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -2148,11 +2046,11 @@
 					)
 				)
 			)
-			(symbol "LM2596S-5_1_1"
-				(pin power_in line
-					(at -12.7 2.54 0)
+			(symbol "LM2594M-5.0_1_1"
+				(pin passive line
+					(at -5.08 -7.62 90)
 					(length 2.54)
-					(name "VIN"
+					(name "NC"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2167,10 +2065,10 @@
 						)
 					)
 				)
-				(pin output line
-					(at 12.7 -2.54 180)
+				(pin passive line
+					(at -2.54 -7.62 90)
 					(length 2.54)
-					(name "OUT"
+					(name "NC"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2185,10 +2083,10 @@
 						)
 					)
 				)
-				(pin power_in line
+				(pin passive line
 					(at 0 -7.62 90)
 					(length 2.54)
-					(name "GND"
+					(name "NC"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2204,7 +2102,7 @@
 					)
 				)
 				(pin input line
-					(at 12.7 2.54 180)
+					(at 10.16 2.54 180)
 					(length 2.54)
 					(name "FB"
 						(effects
@@ -2222,7 +2120,7 @@
 					)
 				)
 				(pin input line
-					(at -12.7 -2.54 0)
+					(at -10.16 0 0)
 					(length 2.54)
 					(name "~{ON}/OFF"
 						(effects
@@ -2232,6 +2130,60 @@
 						)
 					)
 					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 5.08 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "VIN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 10.16 0 180)
+					(length 2.54)
+					(name "OUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2459,46 +2411,16 @@
 		)
 	)
 	(junction
-		(at 57.15 158.75)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "2719ecae-e992-4c79-b381-a0d714ccb319")
-	)
-	(junction
-		(at 107.95 101.6)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "34a5f4ef-d1d0-4df9-bca6-9347bf7c78a0")
-	)
-	(junction
-		(at 85.09 158.75)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "438f9132-0840-4bd4-b5b3-e4bfeb02a674")
-	)
-	(junction
 		(at 63.5 101.6)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "46094b94-71d4-49b6-839f-16720a0694ef")
 	)
 	(junction
-		(at 215.9 130.81)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "4bbea98e-9ed2-4990-ac21-70ab579bc123")
-	)
-	(junction
 		(at 90.17 158.75)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "527cb595-4246-41ad-b81c-57233560ed52")
-	)
-	(junction
-		(at 190.5 130.81)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "57e027ce-f1ac-4c9c-ab28-8399e0506851")
 	)
 	(junction
 		(at 111.76 106.68)
@@ -2524,24 +2446,40 @@
 		(color 0 0 0 0)
 		(uuid "d621c073-83b1-48e3-b635-4975a5746aa7")
 	)
-	(junction
-		(at 107.95 106.68)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ef676bda-7014-4127-8cfa-3cac472d7a0e")
-	)
-	(junction
-		(at 100.33 158.75)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "fdbf66b2-686b-4a46-84fd-b5ebb66fef5f")
+	(no_connect
+		(at 227.33 82.55)
+		(uuid "1a444269-9ece-4824-ad01-8f795ebc8039")
 	)
 	(no_connect
-		(at 217.17 39.37)
+		(at 81.28 111.76)
+		(uuid "3bd6f2e4-78b7-4abc-8eb3-18d5053484e5")
+	)
+	(no_connect
+		(at 215.9 64.77)
 		(uuid "3e7e79f6-761b-4fc9-b1cb-0209471d539e")
 	)
 	(no_connect
-		(at 195.58 59.69)
+		(at 227.33 80.01)
+		(uuid "5d007b58-8a9f-4007-8ad0-998c4dfe5361")
+	)
+	(no_connect
+		(at 227.33 87.63)
+		(uuid "5e01f6f9-e154-44b3-a258-55935bf136ec")
+	)
+	(no_connect
+		(at 86.36 111.76)
+		(uuid "7d1a978a-4ef1-4f8a-8440-50bcfdb57806")
+	)
+	(no_connect
+		(at 83.82 111.76)
+		(uuid "87f9fdb1-df81-4ad3-b6ae-d374e15db09b")
+	)
+	(no_connect
+		(at 227.33 85.09)
+		(uuid "ea08a6e6-5af6-4f6c-b49e-1fd1e8d25651")
+	)
+	(no_connect
+		(at 194.31 85.09)
 		(uuid "fdc224bc-0934-4e9f-92b9-d1634cdd4825")
 	)
 	(polyline
@@ -2576,7 +2514,7 @@
 	)
 	(wire
 		(pts
-			(xy 63.5 101.6) (xy 73.66 101.6)
+			(xy 63.5 101.6) (xy 76.2 101.6)
 		)
 		(stroke
 			(width 0)
@@ -2586,17 +2524,7 @@
 	)
 	(wire
 		(pts
-			(xy 209.55 130.81) (xy 215.9 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "067146a8-90e6-428b-af62-9871e5546af2")
-	)
-	(wire
-		(pts
-			(xy 182.88 46.99) (xy 195.58 46.99)
+			(xy 181.61 72.39) (xy 194.31 72.39)
 		)
 		(stroke
 			(width 0)
@@ -2606,7 +2534,7 @@
 	)
 	(wire
 		(pts
-			(xy 86.36 111.76) (xy 86.36 115.57)
+			(xy 91.44 111.76) (xy 91.44 115.57)
 		)
 		(stroke
 			(width 0)
@@ -2616,7 +2544,7 @@
 	)
 	(wire
 		(pts
-			(xy 215.9 130.81) (xy 222.25 130.81)
+			(xy 210.82 124.46) (xy 223.52 124.46)
 		)
 		(stroke
 			(width 0)
@@ -2636,17 +2564,7 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 86.36) (xy 208.28 86.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "187401e9-d2a8-4908-a23c-b38f96f32102")
-	)
-	(wire
-		(pts
-			(xy 182.88 57.15) (xy 195.58 57.15)
+			(xy 181.61 82.55) (xy 194.31 82.55)
 		)
 		(stroke
 			(width 0)
@@ -2656,7 +2574,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 49.53) (xy 228.6 49.53)
+			(xy 215.9 74.93) (xy 227.33 74.93)
 		)
 		(stroke
 			(width 0)
@@ -2666,7 +2584,7 @@
 	)
 	(wire
 		(pts
-			(xy 107.95 106.68) (xy 111.76 106.68)
+			(xy 96.52 106.68) (xy 111.76 106.68)
 		)
 		(stroke
 			(width 0)
@@ -2726,7 +2644,7 @@
 	)
 	(wire
 		(pts
-			(xy 185.42 130.81) (xy 190.5 130.81)
+			(xy 186.69 124.46) (xy 203.2 124.46)
 		)
 		(stroke
 			(width 0)
@@ -2736,7 +2654,7 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 49.53) (xy 195.58 49.53)
+			(xy 181.61 74.93) (xy 194.31 74.93)
 		)
 		(stroke
 			(width 0)
@@ -2746,27 +2664,7 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 96.52) (xy 208.28 96.52)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2e14b466-fbd2-4076-958e-67e1b60f975e")
-	)
-	(wire
-		(pts
-			(xy 195.58 93.98) (xy 208.28 93.98)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "305ec7e0-acf5-4083-b56c-1bd8fd330cf3")
-	)
-	(wire
-		(pts
-			(xy 100.33 158.75) (xy 104.14 158.75)
+			(xy 95.25 158.75) (xy 104.14 158.75)
 		)
 		(stroke
 			(width 0)
@@ -2776,7 +2674,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 41.91) (xy 226.06 41.91)
+			(xy 215.9 67.31) (xy 224.79 67.31)
 		)
 		(stroke
 			(width 0)
@@ -2824,36 +2722,6 @@
 		)
 		(uuid "40fcc533-4e31-49cd-a431-3dbd37d993c9")
 	)
-	(wire
-		(pts
-			(xy 195.58 91.44) (xy 208.28 91.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "46148283-9cfa-494c-9ef6-735cc03d8504")
-	)
-	(wire
-		(pts
-			(xy 99.06 106.68) (xy 107.95 106.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4677d158-9044-4ba3-a4a6-9975fc2b0bff")
-	)
-	(wire
-		(pts
-			(xy 195.58 101.6) (xy 208.28 101.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "48d0a382-a568-4e9e-88b0-0cbdb4a4e6d9")
-	)
 	(polyline
 		(pts
 			(xy 90.17 54.61) (xy 90.17 58.42)
@@ -2866,7 +2734,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 52.07) (xy 228.6 52.07)
+			(xy 215.9 77.47) (xy 227.33 77.47)
 		)
 		(stroke
 			(width 0)
@@ -2876,17 +2744,7 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 88.9) (xy 208.28 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4adf6151-c69d-40d9-bc86-8f3c38248300")
-	)
-	(wire
-		(pts
-			(xy 182.88 52.07) (xy 195.58 52.07)
+			(xy 181.61 77.47) (xy 194.31 77.47)
 		)
 		(stroke
 			(width 0)
@@ -2896,7 +2754,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 54.61) (xy 228.6 54.61)
+			(xy 215.9 80.01) (xy 227.33 80.01)
 		)
 		(stroke
 			(width 0)
@@ -2916,7 +2774,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 59.69) (xy 228.6 59.69)
+			(xy 215.9 85.09) (xy 227.33 85.09)
 		)
 		(stroke
 			(width 0)
@@ -2926,7 +2784,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 57.15) (xy 228.6 57.15)
+			(xy 215.9 82.55) (xy 227.33 82.55)
 		)
 		(stroke
 			(width 0)
@@ -2966,16 +2824,6 @@
 	)
 	(wire
 		(pts
-			(xy 85.09 158.75) (xy 90.17 158.75)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6f071e96-08d9-4a8a-af1e-fb5b93b238b9")
-	)
-	(wire
-		(pts
 			(xy 127 106.68) (xy 132.08 106.68)
 		)
 		(stroke
@@ -3006,7 +2854,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 46.99) (xy 226.06 46.99)
+			(xy 215.9 72.39) (xy 224.79 72.39)
 		)
 		(stroke
 			(width 0)
@@ -3016,7 +2864,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 62.23) (xy 228.6 62.23)
+			(xy 215.9 87.63) (xy 227.33 87.63)
 		)
 		(stroke
 			(width 0)
@@ -3026,7 +2874,7 @@
 	)
 	(wire
 		(pts
-			(xy 107.95 101.6) (xy 125.73 101.6)
+			(xy 96.52 101.6) (xy 125.73 101.6)
 		)
 		(stroke
 			(width 0)
@@ -3086,7 +2934,7 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 39.37) (xy 195.58 39.37)
+			(xy 181.61 64.77) (xy 194.31 64.77)
 		)
 		(stroke
 			(width 0)
@@ -3096,23 +2944,13 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 44.45) (xy 226.06 44.45)
+			(xy 215.9 69.85) (xy 224.79 69.85)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "aa3c0e5d-d5c0-4297-b5a8-f62de0a00411")
-	)
-	(wire
-		(pts
-			(xy 195.58 83.82) (xy 208.28 83.82)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "acad7db7-8064-482f-9002-b1c8f8a62bfb")
 	)
 	(wire
 		(pts
@@ -3136,17 +2974,7 @@
 	)
 	(wire
 		(pts
-			(xy 99.06 101.6) (xy 107.95 101.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b5f88d48-af98-44a4-b9f3-0041d5a69e9b")
-	)
-	(wire
-		(pts
-			(xy 182.88 44.45) (xy 195.58 44.45)
+			(xy 181.61 69.85) (xy 194.31 69.85)
 		)
 		(stroke
 			(width 0)
@@ -3156,33 +2984,13 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 54.61) (xy 195.58 54.61)
+			(xy 181.61 80.01) (xy 194.31 80.01)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "bd1ac4e1-233a-4e56-be06-2f021a6ed388")
-	)
-	(wire
-		(pts
-			(xy 195.58 106.68) (xy 208.28 106.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c2d7ae81-5dd8-43f1-9436-b25b89172d53")
-	)
-	(wire
-		(pts
-			(xy 190.5 130.81) (xy 201.93 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c8e3db89-26de-4afe-9309-073e18e91cde")
 	)
 	(wire
 		(pts
@@ -3193,16 +3001,6 @@
 			(type default)
 		)
 		(uuid "cb249c6f-62ff-4ae9-9615-d6d7b476bd27")
-	)
-	(wire
-		(pts
-			(xy 195.58 104.14) (xy 208.28 104.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cd7ecc21-895d-40a6-9863-e664e8644179")
 	)
 	(wire
 		(pts
@@ -3256,16 +3054,6 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 99.06) (xy 208.28 99.06)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "db3c0659-4c19-4ac6-b7ff-f53d293ac7ee")
-	)
-	(wire
-		(pts
 			(xy 38.1 158.75) (xy 45.72 158.75)
 		)
 		(stroke
@@ -3276,7 +3064,7 @@
 	)
 	(wire
 		(pts
-			(xy 53.34 158.75) (xy 57.15 158.75)
+			(xy 53.34 158.75) (xy 64.77 158.75)
 		)
 		(stroke
 			(width 0)
@@ -3286,17 +3074,27 @@
 	)
 	(wire
 		(pts
-			(xy 95.25 158.75) (xy 100.33 158.75)
+			(xy 96.52 104.14) (xy 96.52 106.68)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "edc3ab46-cf9a-41ea-ba9e-1b3d4d74436c")
+		(uuid "e42a99a9-b9ef-41ff-8451-d1215351dd3d")
 	)
 	(wire
 		(pts
-			(xy 187.96 62.23) (xy 195.58 62.23)
+			(xy 76.2 104.14) (xy 72.39 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ea60e404-ee66-4f1f-8710-009f8ed84783")
+	)
+	(wire
+		(pts
+			(xy 186.69 87.63) (xy 194.31 87.63)
 		)
 		(stroke
 			(width 0)
@@ -3316,16 +3114,6 @@
 	)
 	(wire
 		(pts
-			(xy 57.15 158.75) (xy 64.77 158.75)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f302824c-72c6-40bb-9f8e-8951225126b2")
-	)
-	(wire
-		(pts
 			(xy 105.41 49.53) (xy 120.65 49.53)
 		)
 		(stroke
@@ -3336,7 +3124,7 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 41.91) (xy 195.58 41.91)
+			(xy 181.61 67.31) (xy 194.31 67.31)
 		)
 		(stroke
 			(width 0)
@@ -3346,7 +3134,17 @@
 	)
 	(wire
 		(pts
-			(xy 80.01 158.75) (xy 85.09 158.75)
+			(xy 72.39 104.14) (xy 72.39 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f8ec51f7-dcba-4a9a-9de4-c55fff77c0ec")
+	)
+	(wire
+		(pts
+			(xy 80.01 158.75) (xy 90.17 158.75)
 		)
 		(stroke
 			(width 0)
@@ -3533,7 +3331,7 @@
 		(uuid "02afdac3-f98b-456f-b006-eeed0f0fd6c5")
 	)
 	(label "IO33"
-		(at 190.5 57.15 0)
+		(at 189.23 82.55 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3543,30 +3341,8 @@
 		)
 		(uuid "03cacd1a-b7f6-4aad-9991-bae835a4548a")
 	)
-	(label "IO25"
-		(at 220.98 62.23 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "09bea2f1-4e67-4336-9a8a-87e5c0d6951b")
-	)
-	(label "IO5"
-		(at 199.39 88.9 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "12993c8a-5339-46ce-a6fb-ebb280bb10c9")
-	)
 	(label "IO19"
-		(at 190.5 41.91 0)
+		(at 189.23 67.31 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3576,19 +3352,8 @@
 		)
 		(uuid "18cb2c74-9a0d-4f99-bcfb-2276ff12f939")
 	)
-	(label "IO32"
-		(at 199.39 96.52 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "1b8493e3-cd63-4ffd-8a2a-ee258b0f5526")
-	)
 	(label "IO14"
-		(at 220.98 52.07 0)
+		(at 219.71 77.47 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3599,7 +3364,7 @@
 		(uuid "1ded0485-fa4f-46f8-98b4-26d5d9e8169a")
 	)
 	(label "IO32"
-		(at 190.5 54.61 0)
+		(at 189.23 80.01 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3610,7 +3375,7 @@
 		(uuid "378bb60c-7db5-45a7-9b13-5ce52149525a")
 	)
 	(label "IO23"
-		(at 213.36 130.81 0)
+		(at 214.63 124.46 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3621,7 +3386,7 @@
 		(uuid "37d1a327-1b6f-4283-b2e2-c47b7cc29299")
 	)
 	(label "IO18"
-		(at 190.5 44.45 0)
+		(at 189.23 69.85 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3642,41 +3407,8 @@
 		)
 		(uuid "485e0ce2-3ac0-422c-9fc6-5ed21ae32b82")
 	)
-	(label "IO4"
-		(at 199.39 101.6 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "514bfa87-994f-4a0b-8558-aa413818d8e0")
-	)
-	(label "IO15"
-		(at 199.39 106.68 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "62d883ad-52a9-4a4d-852e-2f0e9f9fb685")
-	)
-	(label "IO19"
-		(at 199.39 83.82 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "69aa43f2-13a2-4f00-9fca-65922ec85c7f")
-	)
 	(label "IO23"
-		(at 190.5 39.37 0)
+		(at 189.23 64.77 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3697,17 +3429,6 @@
 		)
 		(uuid "783b95e4-2152-4de2-8bda-4671db1e8e28")
 	)
-	(label "IO33"
-		(at 199.39 99.06 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "7872a0ac-6934-4edf-9beb-61a815ee53c8")
-	)
 	(label "C1"
 		(at 39.37 158.75 0)
 		(fields_autoplaced yes)
@@ -3720,7 +3441,7 @@
 		(uuid "83b96dd8-b8f9-4326-85a8-295e618f07c6")
 	)
 	(label "ButtonPressed"
-		(at 185.42 130.81 0)
+		(at 186.69 124.46 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3741,19 +3462,8 @@
 		)
 		(uuid "8916d83f-e581-42ae-8c26-d42717c113b9")
 	)
-	(label "IO15"
-		(at 220.98 54.61 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "8962e759-7feb-4fc4-a852-34f20db4ff04")
-	)
 	(label "IO22"
-		(at 190.5 49.53 0)
+		(at 189.23 74.93 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3762,17 +3472,6 @@
 			(justify left bottom)
 		)
 		(uuid "964d7ddf-babf-402c-989f-0bc2e9d58e65")
-	)
-	(label "IO14"
-		(at 199.39 104.14 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "a7944517-b8d7-4d69-aa44-704efb94d828")
 	)
 	(label "Vin2"
 		(at 115.57 52.07 0)
@@ -3786,7 +3485,7 @@
 		(uuid "a88a3c2b-3dee-4a28-bb9e-0344883f379c")
 	)
 	(label "IO5"
-		(at 190.5 46.99 0)
+		(at 189.23 72.39 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3797,7 +3496,7 @@
 		(uuid "ab1848b1-69c5-4aae-9e35-ab4ec3ace4de")
 	)
 	(label "IO4"
-		(at 220.98 49.53 0)
+		(at 219.71 74.93 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3807,19 +3506,8 @@
 		)
 		(uuid "b3c09907-1253-40e4-9aa5-96f1fb7e590f")
 	)
-	(label "IO18"
-		(at 199.39 86.36 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "b6a54c77-ba5b-424b-9319-3144603ffa1c")
-	)
 	(label "IO21"
-		(at 190.5 52.07 0)
+		(at 189.23 77.47 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3840,50 +3528,6 @@
 		)
 		(uuid "d1c55843-63ae-4c99-819c-8029efbe4c61")
 	)
-	(label "IO21"
-		(at 199.39 93.98 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "d5c015fd-0f95-4c4d-a2bd-d0123a543ff0")
-	)
-	(label "IO27"
-		(at 220.98 57.15 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ebd924a3-331b-4de6-9baf-42c44167335f")
-	)
-	(label "IO22"
-		(at 199.39 91.44 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ee3d783d-d4dd-41da-ba66-959e053a613c")
-	)
-	(label "IO26"
-		(at 220.98 59.69 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ee80b2cc-7ff8-4556-8ce3-5a7366c46b45")
-	)
 	(label "Vin1"
 		(at 115.57 49.53 0)
 		(fields_autoplaced yes)
@@ -3897,7 +3541,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 86.36 115.57 0)
+		(at 91.44 115.57 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3905,8 +3549,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "040019ae-b63f-4674-8517-e042c0b63a47")
-		(property "Reference" "#PWR07"
-			(at 86.36 121.92 0)
+		(property "Reference" "#PWR06"
+			(at 91.44 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3915,7 +3559,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 86.36 120.65 0)
+			(at 91.44 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3923,7 +3567,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 86.36 115.57 0)
+			(at 91.44 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3932,7 +3576,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 86.36 115.57 0)
+			(at 91.44 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3941,7 +3585,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 86.36 115.57 0)
+			(at 91.44 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3955,92 +3599,7 @@
 		(instances
 			(project ""
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR07")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 100.33 158.75 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "0cfa9523-8c43-4c9b-a7ae-4f7f90a34d44")
-		(property "Reference" "TP4"
-			(at 102.87 152.4 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 97.79 156.718 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 95.25 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 95.25 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 100.33 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 100.33 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 100.33 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a421f4fa-97a7-44b8-ab37-c0fc61f486bb")
-		)
-		(instances
-			(project "doorbell_watcher"
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP4")
+					(reference "#PWR06")
 					(unit 1)
 				)
 			)
@@ -4048,7 +3607,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 205.74 130.81 90)
+		(at 207.01 124.46 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4057,7 +3616,7 @@
 		(fields_autoplaced yes)
 		(uuid "117007a0-069a-4289-aa6f-35698585fb82")
 		(property "Reference" "R4"
-			(at 205.74 124.46 90)
+			(at 207.01 118.11 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4065,7 +3624,7 @@
 			)
 		)
 		(property "Value" "0R"
-			(at 205.74 127 90)
+			(at 207.01 120.65 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4073,7 +3632,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 205.74 132.588 90)
+			(at 207.01 126.238 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4082,7 +3641,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 205.74 130.81 0)
+			(at 207.01 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4091,7 +3650,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 205.74 130.81 0)
+			(at 207.01 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4100,7 +3659,7 @@
 			)
 		)
 		(property "Sim.Device" ""
-			(at 205.74 130.81 0)
+			(at 207.01 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4109,7 +3668,7 @@
 			)
 		)
 		(property "Sim.Pins" ""
-			(at 205.74 130.81 0)
+			(at 207.01 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4222,7 +3781,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 187.96 62.23 0)
+		(at 186.69 87.63 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4230,8 +3789,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1873a112-d49e-48f9-90fc-a389761944bd")
-		(property "Reference" "#PWR012"
-			(at 187.96 68.58 0)
+		(property "Reference" "#PWR011"
+			(at 186.69 93.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4240,7 +3799,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 187.96 67.31 0)
+			(at 186.69 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4248,7 +3807,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 187.96 62.23 0)
+			(at 186.69 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4257,7 +3816,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 187.96 62.23 0)
+			(at 186.69 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4266,7 +3825,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 187.96 62.23 0)
+			(at 186.69 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4280,7 +3839,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR012")
+					(reference "#PWR011")
 					(unit 1)
 				)
 			)
@@ -4384,7 +3943,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2a8c6db7-57d5-45c8-b4cc-82e37270420b")
-		(property "Reference" "#PWR06"
+		(property "Reference" "#PWR05"
 			(at 90.17 173.99 0)
 			(effects
 				(font
@@ -4434,7 +3993,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR06")
+					(reference "#PWR05")
 					(unit 1)
 				)
 			)
@@ -4536,176 +4095,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 228.6 59.69 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "31928b4d-f749-4f86-91f9-87f494fc2c87")
-		(property "Reference" "TP10"
-			(at 233.68 59.0549 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 233.68 60.96 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 228.6 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 228.6 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 228.6 59.69 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 228.6 59.69 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 228.6 59.69 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ec44fd39-5c9e-4497-9764-11c8add1513d")
-		)
-		(instances
-			(project "doorbell_watcher"
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP10")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 190.5 130.81 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "36568664-d937-4c6f-b01d-deea614802c2")
-		(property "Reference" "TP7"
-			(at 193.04 133.4769 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "~"
-			(at 193.04 135.382 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 185.42 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 185.42 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 190.5 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 190.5 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 190.5 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "873743bb-08e6-411a-97a2-93915666eb56")
-		)
-		(instances
-			(project "doorbell_watcher"
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:L")
 		(at 118.11 106.68 90)
 		(unit 1)
@@ -4792,7 +4181,7 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 226.06 46.99 270)
+		(at 224.79 72.39 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4800,8 +4189,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "4af6669f-b3bd-4535-875a-a39327c41351")
-		(property "Reference" "#PWR015"
-			(at 222.25 46.99 0)
+		(property "Reference" "#PWR014"
+			(at 220.98 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4810,7 +4199,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 229.87 46.9899 90)
+			(at 228.6 72.3899 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4819,7 +4208,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 226.06 46.99 0)
+			(at 224.79 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4828,7 +4217,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 226.06 46.99 0)
+			(at 224.79 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4837,7 +4226,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 226.06 46.99 0)
+			(at 224.79 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4851,7 +4240,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR015")
+					(reference "#PWR014")
 					(unit 1)
 				)
 			)
@@ -4859,7 +4248,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 226.06 41.91 90)
+		(at 224.79 67.31 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4867,8 +4256,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "4b95700e-507c-4476-a22d-6cdaaade6fe7")
-		(property "Reference" "#PWR013"
-			(at 232.41 41.91 0)
+		(property "Reference" "#PWR012"
+			(at 231.14 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4877,7 +4266,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 229.87 41.9099 90)
+			(at 228.6 67.3099 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4886,7 +4275,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 226.06 41.91 0)
+			(at 224.79 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4895,7 +4284,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 226.06 41.91 0)
+			(at 224.79 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4904,7 +4293,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 226.06 41.91 0)
+			(at 224.79 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4918,7 +4307,7 @@
 		(instances
 			(project ""
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR013")
+					(reference "#PWR012")
 					(unit 1)
 				)
 			)
@@ -4934,7 +4323,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "575b708e-4e26-4b1d-82fc-3b57188dd8a5")
-		(property "Reference" "#PWR09"
+		(property "Reference" "#PWR08"
 			(at 111.76 124.46 0)
 			(effects
 				(font
@@ -4984,204 +4373,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR09")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 228.6 62.23 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "5806ff98-a022-4fc0-9be8-7d2f60b8ea1c")
-		(property "Reference" "TP11"
-			(at 233.68 61.5949 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 233.68 63.5 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 228.6 67.31 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 228.6 67.31 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 228.6 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 228.6 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 228.6 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e7e51927-32b5-488e-8580-1258fbc62fba")
-		)
-		(instances
-			(project "doorbell_watcher"
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP11")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector_Generic:Conn_01x10")
-		(at 213.36 93.98 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "5c2c7e23-c7e5-46af-a105-7105cf319050")
-		(property "Reference" "J3"
-			(at 215.9 93.9799 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "Conn_01x10"
-			(at 215.9 96.5199 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "parts_lib:10-pin header"
-			(at 213.36 93.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 213.36 93.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x10, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 213.36 93.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 213.36 93.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 213.36 93.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "f4109b45-5544-4d11-8761-cc15f35bb5f9")
-		)
-		(pin "9"
-			(uuid "b39fa1da-5cb8-4148-b15f-9e94bfde7db9")
-		)
-		(pin "1"
-			(uuid "b4e414f6-a47d-49e1-b141-249d91bc92ef")
-		)
-		(pin "10"
-			(uuid "552bf7e5-6693-441d-9b0b-55d1fb354e08")
-		)
-		(pin "6"
-			(uuid "3075347a-404d-4f4f-b199-fe35401d1c7f")
-		)
-		(pin "7"
-			(uuid "6e37e7d8-676f-4755-929d-b7d28bc124ed")
-		)
-		(pin "4"
-			(uuid "8f50c731-1d17-4c19-ae13-63fddc9b551f")
-		)
-		(pin "8"
-			(uuid "29d1d39e-cdba-45ec-8701-54e6ef642463")
-		)
-		(pin "3"
-			(uuid "ee51bd68-2305-45d2-bd3f-b7e1c861982d")
-		)
-		(pin "5"
-			(uuid "e02d2601-6382-4cf6-b05f-c6e1a208aa05")
-		)
-		(instances
-			(project ""
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "J3")
+					(reference "#PWR08")
 					(unit 1)
 				)
 			)
@@ -5278,201 +4470,16 @@
 		)
 	)
 	(symbol
-		(lib_id "Regulator_Switching:LM2596S-5")
-		(at 86.36 104.14 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "623910e4-205c-4d7a-b446-1bc34d7598ab")
-		(property "Reference" "U2"
-			(at 86.36 93.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "LM2596S-5"
-			(at 86.36 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:TO-263-5_TabPin3"
-			(at 87.63 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm2596.pdf"
-			(at 86.36 104.14 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "5V 3A Step-Down Voltage Regulator, TO-263"
-			(at 86.36 104.14 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 86.36 104.14 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 86.36 104.14 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "1e124fef-17da-4c8d-b878-3481e8d3310d")
-		)
-		(pin "4"
-			(uuid "75e4dd90-e8bd-47b1-b422-9a1d94d8c5d4")
-		)
-		(pin "5"
-			(uuid "dcd44379-e171-410c-9b2a-238d3043bd90")
-		)
-		(pin "3"
-			(uuid "65c4ba38-6a23-4e37-87b9-5df0e8452103")
-		)
-		(pin "2"
-			(uuid "2f6fcac1-4d5a-4dee-8156-202017c31451")
-		)
-		(instances
-			(project ""
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "U2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C_Polarized")
-		(at 63.5 109.22 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "66dda0a7-8d67-4997-83c6-a0815a09e3f6")
-		(property "Reference" "C2"
-			(at 59.69 107.0609 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "680u"
-			(at 59.69 109.6009 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "parts_lib:CAP_EEFK_J16_PAN-M"
-			(at 62.5348 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 63.5 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Polarized capacitor"
-			(at 63.5 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 63.5 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 63.5 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "67c47e22-a415-45c6-9406-41cade23191a")
-		)
-		(pin "1"
-			(uuid "c60ff982-e9e9-4dbd-a0af-63c6702eabbb")
-		)
-		(instances
-			(project ""
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "C2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
-		(at 73.66 106.68 270)
+		(at 72.39 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "67497fb4-718d-42e9-a62a-f887150a1bb0")
-		(property "Reference" "#PWR04"
-			(at 67.31 106.68 0)
+		(property "Reference" "#PWR03"
+			(at 72.39 111.76 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5481,7 +4488,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 73.914 109.22 90)
+			(at 74.422 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5490,7 +4497,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 73.66 106.68 0)
+			(at 72.39 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5499,7 +4506,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 73.66 106.68 0)
+			(at 72.39 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5508,7 +4515,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 73.66 106.68 0)
+			(at 72.39 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5522,7 +4529,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR04")
+					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -5530,7 +4537,7 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 226.06 44.45 270)
+		(at 224.79 69.85 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5538,8 +4545,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "692d29fe-3439-44b7-bfad-bf560dfdd6e0")
-		(property "Reference" "#PWR014"
-			(at 222.25 44.45 0)
+		(property "Reference" "#PWR013"
+			(at 220.98 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5548,7 +4555,7 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 229.87 44.4499 90)
+			(at 228.6 69.8499 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5557,7 +4564,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 226.06 44.45 0)
+			(at 224.79 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5566,7 +4573,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 226.06 44.45 0)
+			(at 224.79 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5575,7 +4582,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 226.06 44.45 0)
+			(at 224.79 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5589,7 +4596,95 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR014")
+					(reference "#PWR013")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Regulator_Switching:LM2594M-5.0")
+		(at 86.36 104.14 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7979355e-fd8c-4809-9829-f59f2897864e")
+		(property "Reference" "U2"
+			(at 86.36 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LM2594M-5.0"
+			(at 86.36 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 91.44 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm2594.pdf"
+			(at 86.36 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "5.0V, 0.5A SIMPLE SWITCHER® Step-Down Voltage Regulator, Maximum VIN 45V, SOIC-8"
+			(at 86.36 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "6"
+			(uuid "183262a8-36db-457b-8c47-04d4699db2e8")
+		)
+		(pin "1"
+			(uuid "d555645b-356b-4f0a-9ece-641adee2782a")
+		)
+		(pin "4"
+			(uuid "9f3a8de8-5794-4a82-bc26-4d7dd8d19efd")
+		)
+		(pin "3"
+			(uuid "055b9ff5-4277-421b-96a0-d44b37a61641")
+		)
+		(pin "2"
+			(uuid "611d9614-bc2e-4f56-a345-0806e2d8c47a")
+		)
+		(pin "7"
+			(uuid "80dae643-8a2e-47ac-828b-24fd5047b8ba")
+		)
+		(pin "5"
+			(uuid "2f09416b-00f8-4696-b6f3-60af9933097c")
+		)
+		(pin "8"
+			(uuid "b9832b47-6de0-4a60-9dfa-160a1fda467b")
+		)
+		(instances
+			(project ""
+				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
+					(reference "U2")
 					(unit 1)
 				)
 			)
@@ -5605,7 +4700,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7ed315f1-3f98-449f-be16-8ff94917d77d")
-		(property "Reference" "#PWR08"
+		(property "Reference" "#PWR07"
 			(at 95.25 153.67 0)
 			(effects
 				(font
@@ -5655,91 +4750,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR08")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 57.15 158.75 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "8c4485fe-393f-4f32-98e3-df915274b3a2")
-		(property "Reference" "TP1"
-			(at 55.372 152.654 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 59.69 156.718 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 62.23 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 62.23 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 57.15 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 57.15 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 57.15 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "fca4da35-ed73-47c2-b49c-a5e1084e32bc")
-		)
-		(instances
-			(project "doorbell_watcher"
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP1")
+					(reference "#PWR07")
 					(unit 1)
 				)
 			)
@@ -5747,7 +4758,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x10")
-		(at 212.09 49.53 0)
+		(at 210.82 74.93 0)
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
@@ -5755,8 +4766,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "8eee690a-63ee-455d-b92f-0a9673c15aad")
-		(property "Reference" "J4"
-			(at 213.36 36.322 0)
+		(property "Reference" "J3"
+			(at 212.09 61.722 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5765,7 +4776,7 @@
 			)
 		)
 		(property "Value" "Conn_01x10"
-			(at 221.742 65.278 0)
+			(at 220.472 90.678 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5774,7 +4785,7 @@
 			)
 		)
 		(property "Footprint" "parts_lib:10-pin header"
-			(at 212.09 49.53 0)
+			(at 210.82 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5783,7 +4794,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 212.09 49.53 0)
+			(at 210.82 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5792,7 +4803,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x10, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 212.09 49.53 0)
+			(at 210.82 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5833,7 +4844,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "J4")
+					(reference "J3")
 					(unit 1)
 				)
 			)
@@ -6000,7 +5011,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ab17ed60-cab6-4b36-b5cc-cf9c872b75d4")
-		(property "Reference" "#PWR011"
+		(property "Reference" "#PWR010"
 			(at 132.08 107.95 0)
 			(effects
 				(font
@@ -6050,7 +5061,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR011")
+					(reference "#PWR010")
 					(unit 1)
 				)
 			)
@@ -6066,7 +5077,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "af40511c-6c94-4e71-a361-276185045a2d")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR09"
 			(at 127 124.46 0)
 			(effects
 				(font
@@ -6116,92 +5127,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR010")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 215.9 130.81 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "b0c286d9-f86c-4d0e-94f5-52fa206b7123")
-		(property "Reference" "TP8"
-			(at 218.44 133.4769 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "~"
-			(at 218.44 135.382 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 210.82 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 210.82 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 215.9 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 215.9 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 215.9 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "dd9ff93a-1f97-4a0e-9c89-bd2fd482afce")
-		)
-		(instances
-			(project "doorbell_watcher"
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP8")
+					(reference "#PWR09")
 					(unit 1)
 				)
 			)
@@ -6216,7 +5142,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "bdca0665-dd79-4e8c-946a-32a98844dcfa")
-		(property "Reference" "C3"
+		(property "Reference" "C2"
 			(at 93.98 162.5599 0)
 			(effects
 				(font
@@ -6288,7 +5214,7 @@
 		(instances
 			(project ""
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "C3")
+					(reference "C2")
 					(unit 1)
 				)
 			)
@@ -6296,7 +5222,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x10")
-		(at 200.66 49.53 0)
+		(at 199.39 74.93 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6304,7 +5230,7 @@
 		(dnp no)
 		(uuid "be65408f-714a-4503-8399-10c95024a486")
 		(property "Reference" "J2"
-			(at 199.39 36.576 0)
+			(at 198.12 61.976 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6313,7 +5239,7 @@
 			)
 		)
 		(property "Value" "Conn_01x10"
-			(at 192.786 65.024 0)
+			(at 191.516 90.424 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6322,7 +5248,7 @@
 			)
 		)
 		(property "Footprint" "parts_lib:10-pin header"
-			(at 200.66 49.53 0)
+			(at 199.39 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6331,7 +5257,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 200.66 49.53 0)
+			(at 199.39 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6340,7 +5266,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x10, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 200.66 49.53 0)
+			(at 199.39 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6388,91 +5314,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 85.09 158.75 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "c085eecd-3fc4-4b56-babd-fcf099fa629d")
-		(property "Reference" "TP3"
-			(at 87.63 152.4 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 82.55 156.718 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 80.01 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 80.01 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 85.09 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 85.09 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 85.09 158.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d11b04da-8ba4-4568-8ebf-36093d253e50")
-		)
-		(instances
-			(project "doorbell_watcher"
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Polarized")
 		(at 127 113.03 0)
 		(unit 1)
@@ -6481,7 +5322,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "c0cda804-b4b2-45fa-b451-f237fc90f479")
-		(property "Reference" "C4"
+		(property "Reference" "C3"
 			(at 130.81 110.8709 0)
 			(effects
 				(font
@@ -6553,92 +5394,7 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "C4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 228.6 57.15 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "cc65d342-9f10-42fb-83e8-380836039d50")
-		(property "Reference" "TP9"
-			(at 233.68 56.5149 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 233.68 58.42 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 228.6 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 228.6 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 228.6 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 228.6 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 228.6 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "51e6211b-10eb-47e2-a7b1-4a45b55860d6")
-		)
-		(instances
-			(project ""
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP9")
+					(reference "C3")
 					(unit 1)
 				)
 			)
@@ -6654,7 +5410,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d150e60b-b7be-430a-b2da-ca2a12097001")
-		(property "Reference" "#PWR05"
+		(property "Reference" "#PWR04"
 			(at 82.55 171.45 0)
 			(effects
 				(font
@@ -6704,91 +5460,7 @@
 		(instances
 			(project ""
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR05")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 107.95 106.68 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "d55dc1cb-a5b8-4e32-8787-ddd267b4cfc6")
-		(property "Reference" "TP6"
-			(at 103.378 105.156 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 110.49 104.648 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 113.03 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 113.03 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 107.95 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 107.95 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 107.95 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d7cc6243-a3d8-4511-9670-3b6d52d50209")
-		)
-		(instances
-			(project "doorbell_watcher"
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP6")
+					(reference "#PWR04")
 					(unit 1)
 				)
 			)
@@ -6804,7 +5476,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d6992b60-fcd0-4cf2-8354-153e6e6a143d")
-		(property "Reference" "#PWR03"
+		(property "Reference" "#PWR02"
 			(at 63.5 121.92 0)
 			(effects
 				(font
@@ -6854,7 +5526,95 @@
 		(instances
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "#PWR03")
+					(reference "#PWR02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Polarized")
+		(at 63.5 109.22 0)
+		(mirror y)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "da542549-a34c-468e-97f3-0b08c4abb6d5")
+		(property "Reference" "C1"
+			(at 59.69 107.0609 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "220u"
+			(at 59.69 109.6009 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "parts_lib:CAP_EEFK_F_PAN-M"
+			(at 62.5348 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 63.5 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Polarized capacitor"
+			(at 63.5 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" ""
+			(at 63.5 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" ""
+			(at 63.5 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "04bbff79-ae16-48ac-bfd5-bd5ef46dcc05")
+		)
+		(pin "1"
+			(uuid "9ad72133-60a3-4c74-83eb-254a1d4c4913")
+		)
+		(instances
+			(project "doorbell_watcher"
+				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
+					(reference "C1")
 					(unit 1)
 				)
 			)
@@ -7034,91 +5794,6 @@
 			(project "doorbell_watcher"
 				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
 					(reference "R1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 107.95 101.6 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "f3ca9068-23f9-4087-bdf2-62eacc12f79c")
-		(property "Reference" "TP5"
-			(at 103.632 99.822 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "~"
-			(at 110.49 97.0281 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D2.0mm"
-			(at 102.87 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 102.87 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 107.95 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 107.95 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 107.95 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "fcc0d2c0-fa77-4bf0-8486-09225025432e")
-		)
-		(instances
-			(project "doorbell_watcher"
-				(path "/15a6c9e8-0b7a-4589-8981-aa4e46f59b7b"
-					(reference "TP5")
 					(unit 1)
 				)
 			)
