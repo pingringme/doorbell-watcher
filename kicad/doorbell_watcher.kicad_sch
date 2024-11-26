@@ -4398,7 +4398,7 @@
 				)
 			)
 		)
-		(property "Value" "Screw Terminal"
+		(property "Value" "Screw Terminal 01x03"
 			(at 100.33 45.72 0)
 			(effects
 				(font
@@ -4620,7 +4620,7 @@
 				)
 			)
 		)
-		(property "Value" "LM2594M-5.0"
+		(property "Value" "LM2594MX-5.0"
 			(at 86.36 96.52 0)
 			(effects
 				(font
@@ -5638,7 +5638,7 @@
 				)
 			)
 		)
-		(property "Value" "DF01S1"
+		(property "Value" "MDB10S"
 			(at 52.07 97.7198 0)
 			(effects
 				(font
