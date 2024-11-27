@@ -3676,6 +3676,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C17477"
+			(at 207.01 124.46 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "249a5475-a1b4-4a48-a8c6-8cf23557631d")
 		)
@@ -3757,6 +3766,15 @@
 		)
 		(property "Sim.Pins" ""
 			(at 111.76 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C211773"
+			(at 111.76 113.03 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3910,6 +3928,15 @@
 			)
 		)
 		(property "Sim.Pins" ""
+			(at 95.25 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2828840"
 			(at 95.25 153.67 0)
 			(effects
 				(font
@@ -4073,6 +4100,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C5361360"
+			(at 72.39 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "33b90dfd-1139-4a06-9f0a-324ca7982b77")
 		)
@@ -4157,6 +4193,15 @@
 		)
 		(property "Sim.Pins" ""
 			(at 118.11 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2453068"
+			(at 118.11 106.68 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4451,6 +4496,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C589616"
+			(at 100.33 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "1759d1c1-f511-4bd1-8daf-a5a39ef0334a")
 		)
@@ -4657,6 +4711,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C35323"
+			(at 86.36 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "6"
 			(uuid "183262a8-36db-457b-8c47-04d4699db2e8")
 		)
@@ -4803,6 +4866,15 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x10, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 210.82 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C225507"
 			(at 210.82 74.93 0)
 			(effects
 				(font
@@ -4979,6 +5051,15 @@
 		)
 		(property "Sim.Pins" ""
 			(at 107.95 158.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C17630"
+			(at 107.95 158.75 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5205,6 +5286,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C49678"
+			(at 90.17 163.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "18ce8666-8aea-48ea-b92c-5dd622e2413a")
 		)
@@ -5266,6 +5356,15 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x10, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 199.39 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C225507"
 			(at 199.39 74.93 0)
 			(effects
 				(font
@@ -5340,7 +5439,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "parts_lib:CAP_EEFK_F_PAN-M"
+		(property "Footprint" "parts_lib:CAP_FT_F_PAN-M"
 			(at 127.9652 116.84 0)
 			(effects
 				(font
@@ -5377,6 +5476,15 @@
 			)
 		)
 		(property "Sim.Pins" ""
+			(at 127 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C178594"
 			(at 127 113.03 0)
 			(effects
 				(font
@@ -5560,7 +5668,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "parts_lib:CAP_EEFK_F_PAN-M"
+		(property "Footprint" "parts_lib:CAP_FT_F_PAN-M"
 			(at 62.5348 113.03 0)
 			(effects
 				(font
@@ -5597,6 +5705,15 @@
 			)
 		)
 		(property "Sim.Pins" ""
+			(at 63.5 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C178594"
 			(at 63.5 109.22 0)
 			(effects
 				(font
@@ -5692,6 +5809,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C258169"
+			(at 41.91 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "4"
 			(uuid "c923c79f-4dd3-4347-93e9-38709b02aa58")
 		)
@@ -5777,6 +5903,15 @@
 		)
 		(property "Sim.Pins" ""
 			(at 49.53 158.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C17630"
+			(at 49.53 158.75 90)
 			(effects
 				(font
 					(size 1.27 1.27)

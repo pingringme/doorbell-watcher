@@ -1,12 +1,12 @@
 %TF.GenerationSoftware,KiCad,Pcbnew,8.0.6*%
-%TF.CreationDate,2024-11-26T16:04:19+01:00*%
+%TF.CreationDate,2024-11-27T18:03:50+01:00*%
 %TF.ProjectId,doorbell_watcher,646f6f72-6265-46c6-9c5f-776174636865,rev?*%
 %TF.SameCoordinates,Original*%
 %TF.FileFunction,Soldermask,Top*%
 %TF.FilePolarity,Negative*%
 %FSLAX46Y46*%
 G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
-G04 Created by KiCad (PCBNEW 8.0.6) date 2024-11-26 16:04:19*
+G04 Created by KiCad (PCBNEW 8.0.6) date 2024-11-27 18:03:50*
 %MOMM*%
 %LPD*%
 G01*
@@ -44,11 +44,8 @@ G04 Aperture macros list end*
 %ADD22R,4.114800X1.600200*%
 G04 APERTURE END LIST*
 D10*
-%TO.C,FD1*%
-X117600000Y-63000000D03*
-%TD*%
-%TO.C,FD1*%
-X147400000Y-120200000D03*
+%TO.C,FD2*%
+X147180000Y-120421000D03*
 %TD*%
 D11*
 %TO.C,J3*%
@@ -89,6 +86,10 @@ X130150000Y-99950000D03*
 X125050000Y-99950000D03*
 X125050000Y-108850000D03*
 X130150000Y-108850000D03*
+%TD*%
+D10*
+%TO.C,FD1*%
+X117980000Y-63221000D03*
 %TD*%
 D15*
 %TO.C,C3*%
