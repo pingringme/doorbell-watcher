@@ -37,9 +37,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.762,
-          "height": 1.524,
-          "width": 1.524
+          "drill": 0.0,
+          "height": 1.6002,
+          "width": 4.1148
         },
         "silk_line_width": 0.1,
         "silk_text_italic": false,
@@ -467,7 +467,7 @@
       "idf": "",
       "netlist": "",
       "plot": "../fabrication/",
-      "pos_files": "./",
+      "pos_files": "../fabrication/",
       "specctra_dsn": "",
       "step": "",
       "svg": "",
@@ -477,7 +477,7 @@
   },
   "schematic": {
     "annotate_start_num": 0,
-    "bom_export_filename": "..\\doorbell_watcher.csv",
+    "bom_export_filename": "..\\fabrication\\doorbell_watcher.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
@@ -594,7 +594,7 @@
     },
     "net_format_name": "",
     "page_layout_descr_file": "",
-    "plot_directory": "../../../../Desktop/",
+    "plot_directory": "../fabrication/",
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",
     "spice_model_current_sheet_as_root": true,

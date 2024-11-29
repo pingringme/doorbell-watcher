@@ -5763,7 +5763,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_SMD:Diode_Bridge_OnSemi_SDIP-4L"
+		(property "Footprint" "parts_lib:TSSOP4-MICRO-DIP_948BS_ONS-M"
 			(at 45.72 98.425 0)
 			(effects
 				(font
