@@ -3728,7 +3728,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "parts_lib:ss24_do214AC"
+		(property "Footprint" "parts_lib:DO-214AC(SMA)"
 			(at 116.205 113.03 0)
 			(effects
 				(font
