@@ -1,12 +1,12 @@
 %TF.GenerationSoftware,KiCad,Pcbnew,8.0.6*%
-%TF.CreationDate,2024-12-11T20:18:49+01:00*%
+%TF.CreationDate,2024-12-16T14:26:34+01:00*%
 %TF.ProjectId,doorbell_watcher,646f6f72-6265-46c6-9c5f-776174636865,rev?*%
 %TF.SameCoordinates,Original*%
 %TF.FileFunction,Legend,Bot*%
 %TF.FilePolarity,Positive*%
 %FSLAX46Y46*%
 G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
-G04 Created by KiCad (PCBNEW 8.0.6) date 2024-12-11 20:18:49*
+G04 Created by KiCad (PCBNEW 8.0.6) date 2024-12-16 14:26:34*
 %MOMM*%
 %LPD*%
 G01*
@@ -24,6 +24,17 @@ X132601000Y-114800000D02*
 G75*
 G02*
 X133363000Y-114800000I381000J0D01*
+G01*
+%TO.C,J2*%
+X147507600Y-41221000D02*
+G75*
+G02*
+X146745600Y-41221000I-381000J0D01*
+G01*
+X146745600Y-41221000D02*
+G75*
+G02*
+X147507600Y-41221000I381000J0D01*
 G01*
 %TD*%
 M02*
