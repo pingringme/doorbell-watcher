@@ -18,7 +18,7 @@ const char* password = "***";
 const int bellButtonPin = 23;
 
 // relay pin
-const int bellRelayPin = 4;
+const int bellRelayPin = 32;
 
 // HTTP GET url
 const String serverPath = "https://***";
