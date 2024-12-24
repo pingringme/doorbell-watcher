@@ -1,5 +1,9 @@
+#include <HTTP_Method.h>
+#include <Uri.h>
+#include <NetworkClient.h>
 #include <TinyPICO.h>
 #include <WiFi.h>
+#include <WebServer.h>
 #include <HTTPClient.h>
 
 #define RELAY_DURATION_MS 250
@@ -17,14 +21,17 @@ const int bellButtonPin = 23;
 const int bellRelayPin = 4;
 
 // HTTP GET url
-const String serverPath = "https://url";
-const String security = "***";
-const String action = "&action=bell";
-const String uuid = "***";
-const String serverRequest = serverPath + security + action + uuid;
+const String serverPath = "https://***";
+const String action = "?action=bell";
+const String security = "&sec=";
+const String security_val = "***";
+const String uuid = "&uuid=";
+const String uuid_val = "***";
+const String serverRequest = serverPath + action + security + security_val +  uuid + uuid_val;
 
 // TinyPICO helper
 TinyPICO tp = TinyPICO();
+WebServer server(80);
 int bellState = 0;
 bool configured = false;
 
@@ -33,14 +40,69 @@ void setup() {
   tp.DotStar_SetPixelColor(0, 0, 255);  //Blue
   // serial setup
   Serial.begin(115200);
-  sleep(1);
   Serial.println("booting up...");
-  // wifi setup
-  watchWifi();
   // pins setup
   configureIO();
+  // wifi setup
+  watchWifi();
+  // web server
+  configureWebServer();
+  // standard sleep...
+  sleep(1);
   // release
   configured = true;
+}
+// base URL handling
+void handle_base() {
+  Serial.println("ESP32 Web Server: New request received...");  // for debugging
+  Serial.println("GET /");        // for debugging
+  // board info
+  String info = "Connected to: ";
+  info += ssid;
+  info += "<br/>";
+  info += "IP Address: ";
+  info += WiFi.localIP();
+  info += "<br/>";
+  // body
+  String body = "<html><header><title>PingRing.me</title></header><body><h1>PingRing.me</h1><br/>";
+  body += info;
+  body += "</body></html>";
+  server.send(200, "text/html", body);
+}
+// relay URL handling
+void handle_relay() { 
+  Serial.println("ESP32 Web Server: Activating relay...");
+  Serial.println("GET /relay");
+  // relay trigger
+  activateRelay();
+  server.send(200, "application/json", "{action: 'relay', result: true}");
+}
+// button URL handling
+void handle_button() {
+  Serial.println("ESP32 Web Server: Activating button...");
+  Serial.println("GET /button");
+  // button trigger
+  activateButton();
+  server.send(200, "application/json", "{action: 'button', result: true}");
+}
+// not found
+void handle_NotFound() {
+    server.send(404, "text/plain", "Not found");
+}
+void configureWebServer() {
+  // registering two routes...
+  Serial.println("Creating web routes...");
+  // default
+  server.on("/", handle_base);
+  // registering /relay for relay trigger
+  server.on("/relay", handle_relay);
+  // registering /button for button trigger
+  server.on("/button", handle_button);
+  // not found
+  server.onNotFound(handle_NotFound);
+  // start web server
+  server.begin();
+  Serial.println("HTTP server started");
 }
 void configureIO() {
   // setting pin as input
@@ -59,6 +121,7 @@ void watchWifi() {
       delay(500);
       Serial.print(".");
     }
+    WiFi.setSleep(false);
     Serial.println("");
     printWifiInfo();
     tp.DotStar_SetPixelColor(0, 128, 0);  //Green
@@ -105,7 +168,7 @@ void activateRelay() {
   Serial.println("Relay was switched on/off.");
 }
 
-void buttonPressed() {
+void activateButton() {
     Serial.println("Button Pressed....");
     // actions when button is pressed
     blinkPurple(2);
@@ -128,7 +191,8 @@ void loop() {
   bellState = digitalRead(bellButtonPin);
   // verifying if the button is pressed...
   if (bellState == LOW) {
-    buttonPressed();
+    Serial.println("GPIO LOW detection.....");
+    activateButton();
   }
   // sleep a bit...
   delay(MONITORING_INTERVAL_MS);
