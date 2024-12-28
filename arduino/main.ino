@@ -10,9 +10,16 @@
 #define SLEEP_AFTER_BELL_MS 30000
 #define MONITORING_INTERVAL_MS 150
 
+#define HTTP_SERVER_URL "https://***"
+#define HTTP_SECURITY_CODE "***"
+#define HTTP_BELL_UUID "***"
+
+#define WIFI_SSID "***"
+#define WIFI_PASSWORD "***"
+
 // Wifi credentials
-const char* ssid = "Duarte-IoT";
-const char* password = "***";
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASSWORD;
 
 // button press pin
 const int bellButtonPin = 23;
@@ -21,13 +28,14 @@ const int bellButtonPin = 23;
 const int bellRelayPin = 32;
 
 // HTTP GET url
-const String serverPath = "https://***";
+const String serverPath = HTTP_SERVER_URL;
 const String action = "?action=bell";
 const String security = "&sec=";
-const String security_val = "***";
+const String security_val = HTTP_SECURITY_CODE;
 const String uuid = "&uuid=";
-const String uuid_val = "***";
-const String serverRequest = serverPath + action + security + security_val +  uuid + uuid_val;
+const String uuid_val = HTTP_BELL_UUID;
+// concatenate
+const String serverRequest = serverPath + action + security + security_val + uuid + uuid_val;
 
 // TinyPICO helper
 TinyPICO tp = TinyPICO();
@@ -55,7 +63,7 @@ void setup() {
 // base URL handling
 void handle_base() {
   Serial.println("ESP32 Web Server: New request received...");  // for debugging
-  Serial.println("GET /");        // for debugging
+  Serial.println("GET /");                                      // for debugging
   // board info
   String info = "Connected to: ";
   info += ssid;
@@ -70,7 +78,7 @@ void handle_base() {
   server.send(200, "text/html", body);
 }
 // relay URL handling
-void handle_relay() { 
+void handle_relay() {
   Serial.println("ESP32 Web Server: Activating relay...");
   Serial.println("GET /relay");
   // relay trigger
@@ -87,7 +95,7 @@ void handle_button() {
 }
 // not found
 void handle_NotFound() {
-    server.send(404, "text/plain", "Not found");
+  server.send(404, "text/plain", "Not found");
 }
 void configureWebServer() {
   // registering two routes...
@@ -169,18 +177,19 @@ void activateRelay() {
 }
 
 void activateButton() {
-    Serial.println("Button Pressed....");
-    // actions when button is pressed
-    blinkPurple(2);
-    activateRelay();
-    sendHttpRequest();
-    // debug
-    Serial.println("Actions were executed.");
-    // sleep
-    delay(SLEEP_AFTER_BELL_MS);
+  Serial.println("Button Pressed....");
+  // actions when button is pressed
+  blinkPurple(2);
+  activateRelay();
+  sendHttpRequest();
+  // debug
+  Serial.println("Actions were executed.");
+  // sleep
+  delay(SLEEP_AFTER_BELL_MS);
 }
 
 void loop() {
+  // wait for setup()
   if (!configured) {
     sleep(1);
     return;
@@ -189,11 +198,13 @@ void loop() {
   watchWifi();
   // monitor the bell
   bellState = digitalRead(bellButtonPin);
-  // verifying if the button is pressed...
+  // verifying if the bell button is pressed...
   if (bellState == LOW) {
     Serial.println("GPIO LOW detection.....");
     activateButton();
   }
+  // handle HTML requests
+  server.handleClient();
   // sleep a bit...
   delay(MONITORING_INTERVAL_MS);
 }
