@@ -6,9 +6,9 @@
 #include <WebServer.h>
 #include <HTTPClient.h>
 
-#define RELAY_DURATION_MS 250
+#define RELAY_DURATION_MS 500
 #define SLEEP_AFTER_BELL_MS 30000
-#define MONITORING_INTERVAL_MS 150
+#define MONITORING_INTERVAL_MS 100
 
 #define HTTP_SERVER_URL "https://***"
 #define HTTP_SECURITY_CODE "***"
@@ -69,11 +69,19 @@ void handle_base() {
   info += ssid;
   info += "<br/>";
   info += "IP Address: ";
-  info += WiFi.localIP();
+  info += WiFi.localIP().toString();
   info += "<br/>";
+  info += "RSSI: ";
+  info += String(WiFi.RSSI());
+  info += "<br/>";
+  // actions
+  String actions = "Actions: <br/>";
+  actions += "Relay Only: <form action=\"/relay\" method=\"get\"><button type=\"submit\">Execute</button></form><br/>";
+  actions += "Bell Button: <form action=\"/button\" method=\"get\"><button type=\"submit\">Execute</button></form><br/>";
   // body
   String body = "<html><header><title>PingRing.me</title></header><body><h1>PingRing.me</h1><br/>";
   body += info;
+  body += actions;
   body += "</body></html>";
   server.send(200, "text/html", body);
 }
@@ -81,17 +89,19 @@ void handle_base() {
 void handle_relay() {
   Serial.println("ESP32 Web Server: Activating relay...");
   Serial.println("GET /relay");
+  // send browser/client result
+  server.send(200, "application/json", "{action: 'relay', result: true}");
   // relay trigger
   activateRelay();
-  server.send(200, "application/json", "{action: 'relay', result: true}");
 }
 // button URL handling
 void handle_button() {
   Serial.println("ESP32 Web Server: Activating button...");
   Serial.println("GET /button");
+  // send browser/client result
+  server.send(200, "application/json", "{action: 'button', result: true}");
   // button trigger
   activateButton();
-  server.send(200, "application/json", "{action: 'button', result: true}");
 }
 // not found
 void handle_NotFound() {
