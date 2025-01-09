@@ -5,9 +5,15 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <HTTPClient.h>
+#include <ElegantOTA.h>
+#include "time.h"
+
+#define FIRMWARE_VERSION "20250109224142"
 
 #define RELAY_DURATION_MS 500
-#define SLEEP_AFTER_BELL_MS 30000
+#define SLEEP_AFTER_SETUP_MS 10000 // 10s
+#define SLEEP_AFTER_BELL_MS 45000 // 45s
+#define SLEEP_AFTER_WIFI_RETRY_MS 10000 // 10s
 #define MONITORING_INTERVAL_MS 100
 
 #define HTTP_SERVER_URL "https://***"
@@ -17,7 +23,13 @@
 #define WIFI_SSID "***"
 #define WIFI_PASSWORD "***"
 
+// NTP config
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 0;
+const int   daylightOffset_sec = 3600;
+
 // Wifi credentials
+const char* hostname = "esp32-pingringme";
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
 
@@ -42,21 +54,40 @@ TinyPICO tp = TinyPICO();
 WebServer server(80);
 int bellState = 0;
 bool configured = false;
+int wifiRetries = 0;
+int bellPresses = 0;
+
+String getTimeString() {
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        return "Failed to obtain time";
+    }
+
+    char timeStr[10];
+    strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &timeinfo);
+    
+    return String(timeStr);
+}
 
 void setup() {
   // booting up with blue as initial color
   tp.DotStar_SetPixelColor(0, 0, 255);  //Blue
   // serial setup
   Serial.begin(115200);
-  Serial.println("booting up...");
+  Serial.println("*************");
+  Serial.println("Booting up...");
   // pins setup
   configureIO();
   // wifi setup
   watchWifi();
   // web server
   configureWebServer();
-  // standard sleep...
-  sleep(1);
+  // configure time
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  // standard initial sleep...
+  Serial.println("finishing initial setup()...");
+  // delay after setup
+  delay(SLEEP_AFTER_SETUP_MS);
   // release
   configured = true;
 }
@@ -65,19 +96,32 @@ void handle_base() {
   Serial.println("ESP32 Web Server: New request received...");  // for debugging
   Serial.println("GET /");                                      // for debugging
   // board info
-  String info = "Connected to: ";
+  String info = "";
+  info += "Time: ";
+  info += getTimeString();
+  info += "<br>";
+  info += "Firmware Version: ";
+  info += FIRMWARE_VERSION;
+  info += "<br>";
+  info += "Connected to: ";
   info += ssid;
-  info += "<br/>";
+  info += "<br>";
   info += "IP Address: ";
   info += WiFi.localIP().toString();
-  info += "<br/>";
+  info += "<br>";
   info += "RSSI: ";
   info += String(WiFi.RSSI());
-  info += "<br/>";
+  info += "<br>";
+  info += "Connection retries: ";
+  info += String(wifiRetries);
+  info += "<br>";
+  info += "Bell presses: ";
+  info += String(bellPresses);
+  info += "<br>";
   // actions
-  String actions = "Actions: <br/>";
-  actions += "Relay Only: <form action=\"/relay\" method=\"get\"><button type=\"submit\">Execute</button></form><br/>";
-  actions += "Bell Button: <form action=\"/button\" method=\"get\"><button type=\"submit\">Execute</button></form><br/>";
+  String actions = "<h2>Actions</h2>";
+  actions += "Relay Only: <br><form action=\"/relay\" method=\"get\"><button type=\"submit\">Execute</button></form>";
+  actions += "Bell Button: <br><form action=\"/button\" method=\"get\"><button type=\"submit\">Execute</button></form>";
   // body
   String body = "<html><header><title>PingRing.me</title></header><body><h1>PingRing.me</h1><br/>";
   body += info;
@@ -118,6 +162,8 @@ void configureWebServer() {
   server.on("/button", handle_button);
   // not found
   server.onNotFound(handle_NotFound);
+  // installing OTA feature
+  ElegantOTA.begin(&server);
   // start web server
   server.begin();
   Serial.println("HTTP server started");
@@ -131,18 +177,31 @@ void configureIO() {
 void watchWifi() {
   // (re-)cconnecting to the wifi, if needed.
   if (WiFi.status() != WL_CONNECTED) {
+    // initial config
+    WiFi.setSleep(false);
+    WiFi.setAutoReconnect(true);
+    WiFi.setHostname(hostname);
+    // logging....
     Serial.println("Wifi is not connected....");
-    WiFi.begin(ssid, password);
     // making sure wifi is connected
     while (WiFi.status() != WL_CONNECTED) {
-      tp.DotStar_SetPixelColor(255, 255, 0);  //Yellow
-      delay(500);
-      Serial.print(".");
+      // blink a few times (white/yellow)
+      blinkYellow(3);
+      // increase counter
+      wifiRetries++;
+      // logging
+      Serial.print("Attempting to connect to SSID: ");
+      Serial.print(ssid);
+      Serial.println(" (" + String(wifiRetries) + ").");
+      // Connect to WPA/WPA2 network. Change this line if using open or WEP network:    
+      WiFi.begin(ssid, password);
+      // wait X seconds after wifi connection:
+      delay(SLEEP_AFTER_WIFI_RETRY_MS);
     }
-    WiFi.setSleep(false);
-    Serial.println("");
-    printWifiInfo();
+    // set green LED
     tp.DotStar_SetPixelColor(0, 128, 0);  //Green
+    // logging...
+    printWifiInfo();
   }
 }
 void printWifiInfo() {
@@ -151,6 +210,7 @@ void printWifiInfo() {
   Serial.print("Wifi Status:");
   Serial.println(WiFi.status());
 }
+
 void blinkPurple(int count) {
   int tmp = count;
   while (tmp > 0) {
@@ -160,6 +220,19 @@ void blinkPurple(int count) {
     delay(100);
     // set green
     tp.DotStar_SetPixelColor(0, 128, 0);  //Green
+    tmp--;
+  }
+}
+
+void blinkYellow(int count) {
+  int tmp = count;
+  while (tmp > 0) {
+    // set white
+    tp.DotStar_SetPixelColor(255, 255, 255);  //White
+    // sleep
+    delay(100);
+    // set yellow
+    tp.DotStar_SetPixelColor(255, 255, 0);  //Yellow
     tmp--;
   }
 }
@@ -201,7 +274,7 @@ void activateButton() {
 void loop() {
   // wait for setup()
   if (!configured) {
-    sleep(1);
+    delay(1000);
     return;
   }
   // monitor the wifi
@@ -211,10 +284,13 @@ void loop() {
   // verifying if the bell button is pressed...
   if (bellState == LOW) {
     Serial.println("GPIO LOW detection.....");
+    bellPresses++;
     activateButton();
   }
   // handle HTML requests
   server.handleClient();
+  // handle OTA and reboot
+  ElegantOTA.loop();
   // sleep a bit...
   delay(MONITORING_INTERVAL_MS);
 }
