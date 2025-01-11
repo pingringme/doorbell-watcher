@@ -8,7 +8,7 @@
 #include <ElegantOTA.h>
 #include "time.h"
 
-#define FIRMWARE_VERSION "20250109224142"
+#define FIRMWARE_VERSION "20250111145837"
 
 #define RELAY_DURATION_MS 500
 #define SLEEP_AFTER_SETUP_MS 10000 // 10s
@@ -25,8 +25,8 @@
 
 // NTP config
 const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 0;
-const int   daylightOffset_sec = 3600;
+const long  gmtOffset_sec = 3600; // +1h Berlin
+const int   daylightOffset_sec = 3600; // +1h summer time
 
 // Wifi credentials
 const char* hostname = "esp32-pingringme";
@@ -52,6 +52,7 @@ const String serverRequest = serverPath + action + security + security_val + uui
 // TinyPICO helper
 TinyPICO tp = TinyPICO();
 WebServer server(80);
+String startupDateTime;
 int bellState = 0;
 bool configured = false;
 int wifiRetries = 0;
@@ -67,6 +68,18 @@ String getTimeString() {
     strftime(timeStr, sizeof(timeStr), "%H:%M:%S", &timeinfo);
     
     return String(timeStr);
+}
+
+String getDateString() {
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        return "Failed to obtain date";
+    }
+
+    char dateStr[11];
+    strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &timeinfo); // Format: YYYY-MM-DD
+
+    return String(dateStr);
 }
 
 void setup() {
@@ -86,6 +99,9 @@ void setup() {
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   // standard initial sleep...
   Serial.println("finishing initial setup()...");
+  // print time
+  startupDateTime = getDateString() + " " + getTimeString();
+  Serial.println(startupDateTime);
   // delay after setup
   delay(SLEEP_AFTER_SETUP_MS);
   // release
@@ -97,7 +113,12 @@ void handle_base() {
   Serial.println("GET /");                                      // for debugging
   // board info
   String info = "";
-  info += "Time: ";
+  info += "Startup Date & Time: ";
+  info += startupDateTime;
+  info += "<br>";
+  info += "Current Date & Time: ";
+  info += getDateString();
+  info += " ";
   info += getTimeString();
   info += "<br>";
   info += "Firmware Version: ";
@@ -122,6 +143,7 @@ void handle_base() {
   String actions = "<h2>Actions</h2>";
   actions += "Relay Only: <br><form action=\"/relay\" method=\"get\"><button type=\"submit\">Execute</button></form>";
   actions += "Bell Button: <br><form action=\"/button\" method=\"get\"><button type=\"submit\">Execute</button></form>";
+  actions += "Update Firmware: <br><form action=\"/update\" method=\"get\"><button type=\"submit\">Execute</button></form>";
   // body
   String body = "<html><header><title>PingRing.me</title></header><body><h1>PingRing.me</h1><br/>";
   body += info;
