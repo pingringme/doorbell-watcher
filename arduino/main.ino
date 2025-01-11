@@ -58,6 +58,18 @@ bool configured = false;
 int wifiRetries = 0;
 int bellPresses = 0;
 
+String getMacAddress() {
+    uint8_t mac[6];
+    WiFi.macAddress(mac); // Get MAC address as an array
+    
+    // Convert MAC array to string format
+    char macStr[18];
+    snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X",
+             mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+    return String(macStr);
+}
+
 String getTimeString() {
     struct tm timeinfo;
     if (!getLocalTime(&timeinfo)) {
@@ -80,6 +92,11 @@ String getDateString() {
     strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &timeinfo); // Format: YYYY-MM-DD
 
     return String(dateStr);
+}
+
+String getFreeMemoryString() {
+    int freeHeap = ESP.getFreeHeap();  // Get free heap memory in bytes
+    return String(freeHeap) + " bytes";
 }
 
 void setup() {
@@ -111,18 +128,24 @@ void setup() {
 void handle_base() {
   Serial.println("ESP32 Web Server: New request received...");  // for debugging
   Serial.println("GET /");                                      // for debugging
+  // header
+  String header = "<header><title>PingRing.me</title></header>";
   // board info
   String info = "";
-  info += "Startup Date & Time: ";
+  info += "Firmware Version: ";
+  info += FIRMWARE_VERSION;
+  info += "<br>";
+  info += "Startup date & time: ";
   info += startupDateTime;
   info += "<br>";
-  info += "Current Date & Time: ";
+  info += "Current date & time: ";
   info += getDateString();
   info += " ";
   info += getTimeString();
   info += "<br>";
-  info += "Firmware Version: ";
-  info += FIRMWARE_VERSION;
+  info += "Free Heap Memory: ";
+  info += getFreeMemoryString();
+  info += "<br>";
   info += "<br>";
   info += "Connected to: ";
   info += ssid;
@@ -132,6 +155,10 @@ void handle_base() {
   info += "<br>";
   info += "RSSI: ";
   info += String(WiFi.RSSI());
+  info += "<br>";
+  info += "Mac Address: ";
+  info += getMacAddress();
+  info += "<br>";
   info += "<br>";
   info += "Connection retries: ";
   info += String(wifiRetries);
@@ -145,7 +172,10 @@ void handle_base() {
   actions += "Bell Button: <br><form action=\"/button\" method=\"get\"><button type=\"submit\">Execute</button></form>";
   actions += "Update Firmware: <br><form action=\"/update\" method=\"get\"><button type=\"submit\">Execute</button></form>";
   // body
-  String body = "<html><header><title>PingRing.me</title></header><body><h1>PingRing.me</h1><br/>";
+  String body = "";
+  body += "<html>";
+  body += header;
+  body += "<body><h1>PingRing.me</h1><br/>";
   body += info;
   body += actions;
   body += "</body></html>";
