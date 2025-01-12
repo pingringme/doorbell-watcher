@@ -147,7 +147,7 @@ void handle_base() {
   info += getFreeMemoryString();
   info += "<br>";
   info += "<br>";
-  info += "Connected to: ";
+  info += "Connected to SSID: ";
   info += ssid;
   info += "<br>";
   info += "IP Address: ";
@@ -175,7 +175,8 @@ void handle_base() {
   String body = "";
   body += "<html>";
   body += header;
-  body += "<body><h1>PingRing.me</h1><br/>";
+  body += "<body>";
+  body += "<h1><a href=\"https://pingring.me\" target=\"_blank\">PingRing.me</a></h1><br/>";
   body += info;
   body += actions;
   body += "</body></html>";
