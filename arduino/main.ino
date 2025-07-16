@@ -8,7 +8,7 @@
 #include <ElegantOTA.h>
 #include "time.h"
 
-#define FIRMWARE_VERSION "20250111145837"
+#define FIRMWARE_VERSION "20250716202421"
 
 #define RELAY_DURATION_MS 500
 #define SLEEP_AFTER_SETUP_MS 10000 // 10s
@@ -54,9 +54,10 @@ TinyPICO tp = TinyPICO();
 WebServer server(80);
 String startupDateTime;
 int bellState = 0;
-bool configured = false;
+bool isConfigured = false;
 int wifiRetries = 0;
 int bellPresses = 0;
+bool isSilenced = false;
 
 String getMacAddress() {
     uint8_t mac[6];
@@ -122,7 +123,7 @@ void setup() {
   // delay after setup
   delay(SLEEP_AFTER_SETUP_MS);
   // release
-  configured = true;
+  isConfigured = true;
 }
 // base URL handling
 void handle_base() {
@@ -166,8 +167,12 @@ void handle_base() {
   info += "Bell presses: ";
   info += String(bellPresses);
   info += "<br>";
+  info += "Silence Mode: ";
+  info += String(isSilenced);
+  info += "<br>";
   // actions
   String actions = "<h2>Actions</h2>";
+  actions += "Toggle Silence: <br><form action=\"/silence\" method=\"get\"><button type=\"submit\">Execute</button></form>";
   actions += "Relay Only: <br><form action=\"/relay\" method=\"get\"><button type=\"submit\">Execute</button></form>";
   actions += "Bell Button: <br><form action=\"/button\" method=\"get\"><button type=\"submit\">Execute</button></form>";
   actions += "Update Firmware: <br><form action=\"/update\" method=\"get\"><button type=\"submit\">Execute</button></form>";
@@ -182,6 +187,17 @@ void handle_base() {
   body += "</body></html>";
   server.send(200, "text/html", body);
 }
+
+// silence mode URL handling
+void handle_silence() {
+  Serial.println("ESP32 Web Server: Toggling silence...");
+  Serial.println("GET /silence");
+  // send browser/client result
+  server.send(200, "application/json", "{action: 'silence', result: true}");
+  // switch settings
+  toggleSilence();
+}
+
 // relay URL handling
 void handle_relay() {
   Serial.println("ESP32 Web Server: Activating relay...");
@@ -209,6 +225,8 @@ void configureWebServer() {
   Serial.println("Creating web routes...");
   // default
   server.on("/", handle_base);
+  // registering /silence for toggling silence mode
+  server.on("/silence", handle_silence);
   // registering /relay for relay trigger
   server.on("/relay", handle_relay);
   // registering /button for button trigger
@@ -302,6 +320,18 @@ void sendHttpRequest() {
   Serial.println(httpResponseCode);
 }
 
+void toggleSilence() {
+  Serial.println("Silence setting will be toggled...");
+  if (isSilenced == true) {
+    Serial.println("Bell is not silenced anymore, relay will be triggered...");
+    isSilenced = false;
+  } else {
+    Serial.println("Bell will be silenced, relay will NOT be triggered...");
+    isSilenced = true;
+  }
+  Serial.println("isSilenced=" + String(isSilenced));
+}
+
 void activateRelay() {
   Serial.println("Relay will be executed...");
   // activating relay
@@ -316,7 +346,12 @@ void activateButton() {
   Serial.println("Button Pressed....");
   // actions when button is pressed
   blinkPurple(2);
-  activateRelay();
+  // only rings the bell if not silenced
+  if (!isSilenced) {
+    activateRelay();
+  } else {
+    Serial.println("Bell is currently in silent mode and relay was not triggered...");
+  }
   sendHttpRequest();
   // debug
   Serial.println("Actions were executed.");
@@ -326,7 +361,7 @@ void activateButton() {
 
 void loop() {
   // wait for setup()
-  if (!configured) {
+  if (!isConfigured) {
     delay(1000);
     return;
   }
