@@ -8,7 +8,7 @@
 #include <ElegantOTA.h>
 #include "time.h"
 
-#define FIRMWARE_VERSION "20250716202421"
+#define FIRMWARE_VERSION "20250719085441"
 
 #define RELAY_DURATION_MS 500
 #define SLEEP_AFTER_SETUP_MS 10000 // 10s
@@ -58,6 +58,7 @@ bool isConfigured = false;
 int wifiRetries = 0;
 int bellPresses = 0;
 bool isSilenced = false;
+unsigned long lastBellTime = 0;
 
 String getMacAddress() {
     uint8_t mac[6];
@@ -346,8 +347,8 @@ void activateButton() {
   Serial.println("Button Pressed....");
   // actions when button is pressed
   blinkPurple(2);
-  // only rings the bell if not silenced
-  if (!isSilenced) {
+  // only rings the bell if not silenced and if there is enough time since last bell has been pressed
+  if (!isSilenced && (millis() - lastBellTime) >= SLEEP_AFTER_BELL_MS) {
     activateRelay();
   } else {
     Serial.println("Bell is currently in silent mode and relay was not triggered...");
@@ -355,8 +356,8 @@ void activateButton() {
   sendHttpRequest();
   // debug
   Serial.println("Actions were executed.");
-  // sleep
-  delay(SLEEP_AFTER_BELL_MS);
+  // keep track of the last bell...
+  lastBellTime = millis();
 }
 
 void loop() {
