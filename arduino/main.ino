@@ -8,11 +8,12 @@
 #include <ElegantOTA.h>
 #include "time.h"
 
-#define FIRMWARE_VERSION "20250719085441"
+#define FIRMWARE_VERSION "20250806181114"
 
 #define RELAY_DURATION_MS 500
 #define SLEEP_AFTER_SETUP_MS 10000 // 10s
-#define SLEEP_AFTER_BELL_MS 45000 // 45s
+#define SLEEP_RELAY_AFTER_BELL_MS 45000 // 45s
+#define SLEEP_HTTP_AFTER_BELL_MS 20000 // 20s
 #define SLEEP_AFTER_WIFI_RETRY_MS 10000 // 10s
 #define MONITORING_INTERVAL_MS 100
 
@@ -348,12 +349,17 @@ void activateButton() {
   // actions when button is pressed
   blinkPurple(2);
   // only rings the bell if not silenced and if there is enough time since last bell has been pressed
-  if (!isSilenced && (millis() - lastBellTime) >= SLEEP_AFTER_BELL_MS) {
+  if (!isSilenced && (millis() - lastBellTime) >= SLEEP_RELAY_AFTER_BELL_MS) {
     activateRelay();
   } else {
     Serial.println("Bell is currently in silent mode and relay was not triggered...");
   }
-  sendHttpRequest();
+  // only send http request after some safe period
+  if ((millis() - lastBellTime) >= SLEEP_HTTP_AFTER_BELL_MS) {
+    sendHttpRequest();
+  } else {
+    Serial.println("Bell is currently in silent mode and HTTP request was not triggered...");
+  }
   // debug
   Serial.println("Actions were executed.");
   // keep track of the last bell...
