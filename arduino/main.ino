@@ -5,10 +5,12 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <HTTPClient.h>
+#include <ESPmDNS.h>
 #include <ElegantOTA.h>
+#include <PubSubClient.h>
 #include "time.h"
 
-#define FIRMWARE_VERSION "20250806181114"
+#define FIRMWARE_VERSION "20251125201714"
 
 #define RELAY_DURATION_MS 500
 #define SLEEP_AFTER_SETUP_MS 10000 // 10s
@@ -34,6 +36,21 @@ const char* hostname = "esp32-pingringme";
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
 
+// MQTT config
+const bool  mqtt_enabled            = true;
+const char* mqtt_server_hostname_mdns = "homeassistant"; // homeassistant.local
+const int   mqtt_port = 1883;
+const char* mqtt_auth_user                  = "admin";
+const char* mqtt_auth_pass                  = "***";
+const char* mqtt_device_id                  = "pingringme-esp32";
+const char* mqtt_unique_id                  = "pingringme_doorbell";
+const char* mqtt_topic_state                = "pingringme/doorbell/state";
+const char* mqtt_topic_count                = "pingringme/doorbell/count";
+const char* mqtt_topic_attributes           = "pingringme/doorbell/attributes";
+const char* mqtt_topic_availability         = "pingringme/status";
+const char* mqtt_topic_discovery_state      = "homeassistant/binary_sensor/pingringme_doorbell/config";
+const char* mqtt_topic_discovery_count      = "homeassistant/sensor/pingringme_doorbell_count/config";
+
 // button press pin
 const int bellButtonPin = 23;
 
@@ -50,14 +67,21 @@ const String uuid_val = HTTP_BELL_UUID;
 // concatenate
 const String serverRequest = serverPath + action + security + security_val + uuid + uuid_val;
 
-// TinyPICO helper
+// instances
 TinyPICO tp = TinyPICO();
 WebServer server(80);
+WiFiClient espClient;
+PubSubClient mqttClient(espClient);
+
+// variables
+IPAddress mqttServerIP;
 String startupDateTime;
 int bellState = 0;
 bool isConfigured = false;
+int mqttRetries = 0;
 int wifiRetries = 0;
 int bellPresses = 0;
+int mqttDiscoverySent = 0;
 bool isSilenced = false;
 unsigned long lastBellTime = 0;
 
@@ -113,6 +137,10 @@ void setup() {
   configureIO();
   // wifi setup
   watchWifi();
+  // mDNS
+  configureMDNS();
+  // mqtt
+  configureMQTT();
   // web server
   configureWebServer();
   // configure time
@@ -163,7 +191,18 @@ void handle_base() {
   info += getMacAddress();
   info += "<br>";
   info += "<br>";
-  info += "Connection retries: ";
+  info += "MQTT Connected: ";
+  info += String(mqttClient.connected());
+  info += " (" + mqttServerIP.toString() + ":" + String(mqtt_port) + " and user: " + mqtt_auth_user + ")";
+  info += "<br>";
+  info += "MQTT Conenction Retries: ";
+  info += String(mqttRetries);
+  info += "<br>";
+  info += "MQTT Discovery Message(s) sent: ";
+  info += String(mqttDiscoverySent);
+  info += "<br>";
+  info += "<br>";
+  info += "WiFi Connection retries: ";
   info += String(wifiRetries);
   info += "<br>";
   info += "Bell presses: ";
@@ -216,11 +255,80 @@ void handle_button() {
   // send browser/client result
   server.send(200, "application/json", "{action: 'button', result: true}");
   // button trigger
-  activateButton();
+  activateButton("http");
 }
 // not found
 void handle_NotFound() {
   server.send(404, "text/plain", "Not found");
+}
+void handle_restart() {
+  Serial.println("arduino/esp32 - restart requested...");
+  ESP.restart();
+}
+void configureMQTT() {
+
+  if (!mqtt_enabled) {
+    Serial.println("MQTT service is not enabled.");
+    return;
+  }
+
+  int retries = 0;
+  if (strlen(mqtt_server_hostname_mdns) > 0 && mqtt_port > 0) {
+    mqttServerIP = MDNS.queryHost(mqtt_server_hostname_mdns);
+    mqttClient.setServer(mqttServerIP, mqtt_port);
+    mqttClient.setBufferSize(1024);
+    while (!mqttClient.connected() && retries < 3) {
+      mqttRetries++;
+      mqttClient.connect(mqtt_device_id, mqtt_auth_user, mqtt_auth_pass);
+      if (!mqttClient.connected()) {
+        retries++;
+        delay(1000);
+      } else {
+        // Publish availability
+        mqttClient.publish(mqtt_topic_availability, "online", true);
+        // Publish MQTT Discovery config (retain = true)
+        String discovery_payload;
+        // discovery for STATE
+        discovery_payload = "{";
+        discovery_payload += "\"name\": \"Doorbell\",";
+        discovery_payload += "\"unique_id\": \"" + String(mqtt_unique_id) + "\",";
+        discovery_payload += "\"state_topic\": \"" + String(mqtt_topic_state) + "\",";
+        discovery_payload += "\"json_attributes_topic\": \"" + String(mqtt_topic_attributes) + "\",";
+        discovery_payload += "\"device_class\": \"occupancy\",";
+        discovery_payload += "\"payload_on\": \"ON\",";
+        discovery_payload += "\"payload_off\": \"OFF\",";
+        discovery_payload += "\"availability_topic\": \"" + String(mqtt_topic_availability) + "\",";
+        discovery_payload += "\"payload_available\": \"online\",";
+        discovery_payload += "\"payload_not_available\": \"offline\",";
+        discovery_payload += "\"device\": {";
+        discovery_payload +=   "\"identifiers\": [\"" + String(mqtt_device_id) + "\"],";
+        discovery_payload +=   "\"manufacturer\": \"PingRing.me\",";
+        discovery_payload +=   "\"model\": \"PingRing Board\",";
+        discovery_payload +=   "\"name\": \"PingRing\"";
+        discovery_payload += "}";
+        discovery_payload += "}";
+        mqttClient.publish(mqtt_topic_discovery_state, discovery_payload.c_str(), true);
+        mqttDiscoverySent++;
+        // discovery for COUNT
+        discovery_payload = "{";
+        discovery_payload += "\"name\": \"Presses\",";
+        discovery_payload += "\"unique_id\": \"" + String(mqtt_unique_id) + "_count\",";
+        discovery_payload += "\"state_topic\": \"" + String(mqtt_topic_count) + "\",";
+        discovery_payload += "\"unit_of_measurement\": \"presses\",";
+        discovery_payload += "\"state_class\": \"total_increasing\",";
+        discovery_payload += "\"device\": {";
+        discovery_payload +=   "\"identifiers\": [\"" + String(mqtt_device_id) + "\"],";
+        discovery_payload +=   "\"manufacturer\": \"PingRing.me\",";
+        discovery_payload +=   "\"model\": \"PingRing Board\",";
+        discovery_payload +=   "\"name\": \"PingRing\"";
+        discovery_payload += "}";
+        discovery_payload += "}";
+        mqttClient.publish(mqtt_topic_discovery_count, discovery_payload.c_str(), true);
+        mqttDiscoverySent++;
+        Serial.println("MQTT connected and discovery sent!");
+      }
+    }
+  }
 }
 void configureWebServer() {
   // registering two routes...
@@ -233,6 +341,8 @@ void configureWebServer() {
   server.on("/relay", handle_relay);
   // registering /button for button trigger
   server.on("/button", handle_button);
+  // registering /restart for arduino&esp32 restart
+  server.on("/restart", handle_restart);
   // not found
   server.onNotFound(handle_NotFound);
   // installing OTA feature
@@ -246,6 +356,14 @@ void configureIO() {
   pinMode(bellButtonPin, INPUT);
   pinMode(bellRelayPin, OUTPUT);
   digitalWrite(bellRelayPin, LOW);
+}
+void configureMDNS() {
+    // starting mDNS
+    if (!MDNS.begin(hostname)) {
+      Serial.println("Error setting up mDNS responder!");
+    } else {
+      Serial.println("mDNS responder started.");
+    }
 }
 void watchWifi() {
   // (re-)cconnecting to the wifi, if needed.
@@ -275,6 +393,7 @@ void watchWifi() {
     tp.DotStar_SetPixelColor(0, 128, 0);  //Green
     // logging...
     printWifiInfo();
+
   }
 }
 void printWifiInfo() {
@@ -307,6 +426,30 @@ void blinkYellow(int count) {
     // set yellow
     tp.DotStar_SetPixelColor(255, 255, 0);  //Yellow
     tmp--;
+  }
+}
+
+void publishMqttState(const char* source, const char* state, bool sendAttributes) {
+
+  if (!mqtt_enabled) {
+    return;
+  }
+
+  // Publish bell state
+  mqttClient.publish(mqtt_topic_state, state);
+  mqttClient.publish(mqtt_topic_count, String(bellPresses).c_str(), true); // retain - to be able to see it later :)
+
+  // should we send attributes?
+  if (sendAttributes) {
+    // Build JSON attributes
+    String payload = "{";
+    payload += "\"source\":\"" + String(source) + "\",";
+    payload += "\"event\":\"pressed\",";
+    payload += "\"is_silenced\":" + String(isSilenced ? "true" : "false") + ",";
+    payload += "\"bell_counter\":" + String(bellPresses);
+    payload += "}";
+    // publishing attributes
+    mqttClient.publish(mqtt_topic_attributes, payload.c_str(), false);
   }
 }
 
@@ -344,10 +487,14 @@ void activateRelay() {
   Serial.println("Relay was switched on/off.");
 }
 
-void activateButton() {
+void activateButton(const char* source) {
   Serial.println("Button Pressed....");
+  // counter
+  bellPresses++;
   // actions when button is pressed
   blinkPurple(2);
+  // triggers mqtt , no matter what, "ON" state  :)
+  publishMqttState(source, "ON", true);
   // only rings the bell if not silenced and if there is enough time since last bell has been pressed
   if (!isSilenced && (millis() - lastBellTime) >= SLEEP_RELAY_AFTER_BELL_MS) {
     activateRelay();
@@ -360,6 +507,8 @@ void activateButton() {
   } else {
     Serial.println("Bell is currently in silent mode and HTTP request was not triggered...");
   }
+  // triggers mqtt , no matter what, "OFF" state, but without attributes  :)
+  publishMqttState(source, "OFF", false);
   // debug
   Serial.println("Actions were executed.");
   // keep track of the last bell...
@@ -379,13 +528,14 @@ void loop() {
   // verifying if the bell button is pressed...
   if (bellState == LOW) {
     Serial.println("GPIO LOW detection.....");
-    bellPresses++;
-    activateButton();
+    activateButton("button");
   }
   // handle HTML requests
   server.handleClient();
   // handle OTA and reboot
   ElegantOTA.loop();
+  // handle MQTT
+  mqttClient.loop();
   // sleep a bit...
   delay(MONITORING_INTERVAL_MS);
 }
