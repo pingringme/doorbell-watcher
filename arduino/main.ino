@@ -10,7 +10,7 @@
 #include <PubSubClient.h>
 #include "time.h"
 
-#define FIRMWARE_VERSION "20251125201714"
+#define FIRMWARE_VERSION "20251126092014"
 
 #define RELAY_DURATION_MS 500
 #define SLEEP_AFTER_SETUP_MS 10000 // 10s
@@ -27,19 +27,19 @@
 #define WIFI_PASSWORD "***"
 
 // NTP config
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 3600; // +1h Berlin
-const int   daylightOffset_sec = 3600; // +1h summer time
+const char* ntpServer           = "pool.ntp.org";
+const long  gmtOffset_sec       = 3600; // +1h Berlin
+const int   daylightOffset_sec  = 3600; // +1h summer time
 
 // Wifi credentials
-const char* hostname = "esp32-pingringme";
-const char* ssid = WIFI_SSID;
-const char* password = WIFI_PASSWORD;
+const char* hostname    = "esp32-pingringme";
+const char* ssid        = WIFI_SSID;
+const char* password    = WIFI_PASSWORD;
 
 // MQTT config
-const bool  mqtt_enabled            = true;
-const char* mqtt_server_hostname_mdns = "homeassistant"; // homeassistant.local
-const int   mqtt_port = 1883;
+const bool  mqtt_enabled                    = true;
+const char* mqtt_server_hostname_mdns       = "homeassistant"; // homeassistant.local
+const int   mqtt_port                       = 1883;
 const char* mqtt_auth_user                  = "admin";
 const char* mqtt_auth_pass                  = "***";
 const char* mqtt_device_id                  = "pingringme-esp32";
@@ -56,6 +56,120 @@ const int bellButtonPin = 23;
 
 // relay pin
 const int bellRelayPin = 32;
+
+// template
+const String html_template_main = R"=====(
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PingRing.me</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background-color: #f7f9fc; }
+        .card { border-radius: 12px; }
+        .section-title { margin-top: 25px; }
+    </style>
+    <script>
+        function executeAction(url) {
+          fetch(url)
+              .then(() => location.reload());
+        }
+    </script>
+</head>
+
+<body>
+<div class="container py-4">
+
+    <h1 class="text-center mb-4">
+        <a href="https://pingring.me" target="_blank" class="text-decoration-none">PingRing.me</a>
+    </h1>
+
+    <div class="row g-4">
+
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title">Device</h4>
+                    <hr>
+                    <p><strong>Firmware Version:</strong> {{firmware}}</p>
+                    <p><strong>Startup Time:</strong> {{startup}}</p>
+                    <p><strong>Current Time:</strong> {{now}}</p>
+                    <p><strong>Free Heap Memory:</strong> {{heap}} bytes</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title">Network</h4>
+                    <hr>
+                    <p><strong>SSID:</strong> {{ssid}}</p>
+                    <p><strong>IP Address:</strong> {{ip}}</p>
+                    <p><strong>RSSI:</strong> {{rssi}}</p>
+                    <p><strong>MAC Address:</strong> {{mac}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title">MQTT</h4>
+                    <hr>
+                    <p><strong>Server:</strong> {{mqtt_server}}</p>
+                    <p><strong>Connected:</strong> {{mqtt_connected}} (retries: {{mqtt_retries}})</p>
+                    <p><strong>Discovery Messages Sent:</strong> {{mqtt_discovery}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title">Status</h4>
+                    <hr>
+                    <p><strong>WiFi Connection Retries:</strong> {{wifi_retries}}</p>
+                    <p><strong>Bell Presses:</strong> {{bell_presses}}</p>
+                    <p><strong>Silence Mode:</strong> {{silence_mode}}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <h2 class="section-title">Actions</h2>
+
+    <div class="row g-3">
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <button type="submit" class="btn btn-primary w-100" onclick="executeAction('/silence')">Toggle Silence</button>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <button type="submit" class="btn btn-warning w-100" onclick="executeAction('/relay')">Relay Only</button>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <button type="submit" class="btn btn-success w-100" onclick="executeAction('/button')">Bell Button</button>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <form action="/update" method="get">
+                <button type="submit" class="btn btn-danger w-100">Update Firmware</button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>
+)=====";
 
 // HTTP GET url
 const String serverPath = HTTP_SERVER_URL;
@@ -159,74 +273,30 @@ void setup() {
 void handle_base() {
   Serial.println("ESP32 Web Server: New request received...");  // for debugging
   Serial.println("GET /");                                      // for debugging
-  // header
-  String header = "<header><title>PingRing.me</title></header>";
-  // board info
-  String info = "";
-  info += "Firmware Version: ";
-  info += FIRMWARE_VERSION;
-  info += "<br>";
-  info += "Startup date & time: ";
-  info += startupDateTime;
-  info += "<br>";
-  info += "Current date & time: ";
-  info += getDateString();
-  info += " ";
-  info += getTimeString();
-  info += "<br>";
-  info += "Free Heap Memory: ";
-  info += getFreeMemoryString();
-  info += "<br>";
-  info += "<br>";
-  info += "Connected to SSID: ";
-  info += ssid;
-  info += "<br>";
-  info += "IP Address: ";
-  info += WiFi.localIP().toString();
-  info += "<br>";
-  info += "RSSI: ";
-  info += String(WiFi.RSSI());
-  info += "<br>";
-  info += "Mac Address: ";
-  info += getMacAddress();
-  info += "<br>";
-  info += "<br>";
-  info += "MQTT Connected: ";
-  info += String(mqttClient.connected());
-  info += " (" + mqttServerIP.toString() + ":" + String(mqtt_port) + " and user: " + mqtt_auth_user + ")";
-  info += "<br>";
-  info += "MQTT Conenction Retries: ";
-  info += String(mqttRetries);
-  info += "<br>";
-  info += "MQTT Discovery Message(s) sent: ";
-  info += String(mqttDiscoverySent);
-  info += "<br>";
-  info += "<br>";
-  info += "WiFi Connection retries: ";
-  info += String(wifiRetries);
-  info += "<br>";
-  info += "Bell presses: ";
-  info += String(bellPresses);
-  info += "<br>";
-  info += "Silence Mode: ";
-  info += String(isSilenced);
-  info += "<br>";
-  // actions
-  String actions = "<h2>Actions</h2>";
-  actions += "Toggle Silence: <br><form action=\"/silence\" method=\"get\"><button type=\"submit\">Execute</button></form>";
-  actions += "Relay Only: <br><form action=\"/relay\" method=\"get\"><button type=\"submit\">Execute</button></form>";
-  actions += "Bell Button: <br><form action=\"/button\" method=\"get\"><button type=\"submit\">Execute</button></form>";
-  actions += "Update Firmware: <br><form action=\"/update\" method=\"get\"><button type=\"submit\">Execute</button></form>";
-  // body
-  String body = "";
-  body += "<html>";
-  body += header;
-  body += "<body>";
-  body += "<h1><a href=\"https://pingring.me\" target=\"_blank\">PingRing.me</a></h1><br/>";
-  body += info;
-  body += actions;
-  body += "</body></html>";
-  server.send(200, "text/html", body);
+ 
+  // response
+  String page = html_template_main;
+  // variables 
+  page.replace("{{firmware}}", FIRMWARE_VERSION);
+  page.replace("{{startup}}", startupDateTime);
+  page.replace("{{now}}", getDateString() + " "+ getTimeString());
+  page.replace("{{heap}}", getFreeMemoryString());
+
+  page.replace("{{ssid}}", WiFi.SSID());
+  page.replace("{{ip}}", WiFi.localIP().toString());
+  page.replace("{{rssi}}", String(WiFi.RSSI()));
+  page.replace("{{mac}}", getMacAddress());
+
+  page.replace("{{mqtt_server}}", "mqtt://" + String(mqtt_auth_user) + ":***@" + mqttServerIP.toString() + ":" + String(mqtt_port));
+  page.replace("{{mqtt_connected}}", mqttClient.connected() ? "true" : "false");
+  page.replace("{{mqtt_retries}}", String(mqttRetries));
+  page.replace("{{mqtt_discovery}}", String(mqttDiscoverySent));
+
+  page.replace("{{wifi_retries}}", String(wifiRetries));
+  page.replace("{{bell_presses}}", String(bellPresses));
+  page.replace("{{silence_mode}}", isSilenced ? "true" : "false");
+ 
+  server.send(200, "text/html", page);
 }
 
 // silence mode URL handling
