@@ -8,10 +8,12 @@ import base64
 # variables
 C_SEC_CODE = '***'
 C_UUID_BELL = '***'
+C_UUID_EMERGENCY_DEVICE = '***'
 C_SENDER_EMAIL = 'info@***'
 C_AWS_REGION = "eu-central-1"
 C_WHATSAPP_SENDER_ID = '***'
-C_WHATSAPP_TEMPLATE_NAME = '***'
+C_WHATSAPP_TEMPLATE_NAME_BELL = '***'
+C_WHATSAPP_TEMPLATE_NAME_EMERGENCY = '***'
 C_SMS_SENDER_ID = '***'
 
 # Initialize SNS client
@@ -45,11 +47,15 @@ def send_email(recipient_email, subject, body):
             }
         )
 
-def send_phonemessage(sender_id, phone_number, hourminute):
-    return send_phone_sms_message(sender_id, phone_number, hourminute)
+def send_phone_sms_message(action, sender_id, phone_number, hourminute):
+    # creating message based on action...
+    if action.upper().strip() == 'BELL':
+        message = 'Bell is ringing at ' + hourminute
+    elif action.upper().strip() == 'EMERGENCY':
+        message = 'Emergency button pressed at ' + hourminute
+    else:
+        return 'unknown action'
 
-def send_phone_sms_message(sender_id, phone_number, hourminute):
-    message = 'Bell is ringing at ' + hourminute
     return sns_client.publish(
         PhoneNumber=phone_number, 
         Message=message,
@@ -64,14 +70,22 @@ def send_phone_sms_message(sender_id, phone_number, hourminute):
                 }
                 })
 
-def send_phone_whatsapp_message(destination_phone_number, msg):
+def send_phone_whatsapp_message(action, destination_phone_number, msg):
+    template = None
+    if action.upper().strip() == 'BELL':
+        template = C_WHATSAPP_TEMPLATE_NAME_BELL
+    elif action.upper().strip() == 'EMERGENCY':
+        template = C_WHATSAPP_TEMPLATE_NAME_EMERGENCY
+    else:
+        return 'unknown action'
+    # body
     body = {
         "messaging_product": "whatsapp",
         "recipient_type": "individual",
         "to": destination_phone_number,
         "type": "template",
         "template": {
-            "name": C_WHATSAPP_TEMPLATE_NAME,
+            "name": template,
             "language": {
                 "code": "en"
             },
@@ -99,12 +113,16 @@ def send_phone_whatsapp_message(destination_phone_number, msg):
 def get_subject(action, hourminute):
     if action.upper().strip() == 'BELL':
         return '🔔 BELL 🔔 @ ' + hourminute
+    elif action.upper().strip() == 'EMERGENCY':
+        return '🚨 EMERGENCY 🚨 @ ' + hourminute
     else:
         return 'unknown action'
 
 def get_message(action, dateandhour):
     if action.upper().strip() == 'BELL':
         return 'someone is ringing your Bell @ ' + dateandhour
+    elif action.upper().strip() == 'EMERGENCY':
+        return 'someone is pressing your Emergency Device @ ' + dateandhour
     else:
         return 'unknown action'
 
@@ -147,13 +165,13 @@ def lambda_handler(event, context):
         message = get_message(action, dateandhour)
 
         # verifying bell uuid
-        if uuid == C_UUID_BELL:
+        if uuid in [C_UUID_BELL, C_UUID_EMERGENCY_DEVICE]:
             # sms
             for phone_item in phone_list:
                 # phone (sms)
-                response.append(send_phonemessage(sender_id, phone_item, hourminute))
+                response.append(send_phone_sms_message(action, sender_id, phone_item, hourminute))
                 # phone (whatsapp)
-                response.append(send_phone_whatsapp_message(phone_item, dateandhour))
+                response.append(send_phone_whatsapp_message(action, phone_item, dateandhour))
             if only_phone.lower().strip() == 'no':
                 # email
                 for email_item in email_list:
