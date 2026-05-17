@@ -17,6 +17,10 @@
 #define SLEEP_HTTP_AFTER_BELL_MS     20000  // 20s
 #define SLEEP_AFTER_WIFI_RETRY_MS    10000  // 10s
 #define MONITORING_INTERVAL_MS       100
+#define DEBOUNCE_MS                  50     // bell button debounce window
+#define NTP_SYNC_TIMEOUT_MS          10000  // wait up to this long for NTP at boot
+#define MQTT_RECONNECT_INTERVAL_MS   5000   // do not retry more often than this
+#define HTTP_TIMEOUT_MS              5000   // outbound HTTPS request timeout
 
 // ---------------------------------------------------------------------------
 // HTTP backend
@@ -90,7 +94,10 @@ const String html_template_main = R"=====(
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PingRing.me</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
 
     <style>
         body { background-color: #f7f9fc; }
@@ -100,7 +107,15 @@ const String html_template_main = R"=====(
     <script>
         function executeAction(url) {
           fetch(url)
-              .then(() => location.reload());
+              .then(function (response) {
+                  if (!response.ok) {
+                      throw new Error('HTTP ' + response.status);
+                  }
+                  location.reload();
+              })
+              .catch(function (err) {
+                  alert('Request failed: ' + err.message);
+              });
         }
     </script>
 </head>
@@ -171,15 +186,15 @@ const String html_template_main = R"=====(
     <div class="row g-3">
 
         <div class="col-12 col-md-6 col-lg-3">
-            <button type="submit" class="btn btn-primary w-100" onclick="executeAction('/silence')">Toggle Silence</button>
+            <button type="button" class="btn btn-primary w-100" onclick="executeAction('/silence')">Toggle Silence</button>
         </div>
 
         <div class="col-12 col-md-6 col-lg-3">
-            <button type="submit" class="btn btn-warning w-100" onclick="executeAction('/relay')">Relay Only</button>
+            <button type="button" class="btn btn-warning w-100" onclick="executeAction('/relay')">Relay Only</button>
         </div>
 
         <div class="col-12 col-md-6 col-lg-3">
-            <button type="submit" class="btn btn-success w-100" onclick="executeAction('/button')">Bell Button</button>
+            <button type="button" class="btn btn-success w-100" onclick="executeAction('/button')">Bell Button</button>
         </div>
 
         <div class="col-12 col-md-6 col-lg-3">
