@@ -6,15 +6,15 @@
 // ---------------------------------------------------------------------------
 // Firmware
 // ---------------------------------------------------------------------------
-#define FIRMWARE_VERSION "20251126092014"
+#define FIRMWARE_VERSION "20260517105625"
 
 // ---------------------------------------------------------------------------
 // Timings (milliseconds)
 // ---------------------------------------------------------------------------
 #define RELAY_DURATION_MS            750
-#define SLEEP_AFTER_SETUP_MS         10000  // 10s
-#define SLEEP_RELAY_AFTER_BELL_MS    45000  // 45s
-#define SLEEP_HTTP_AFTER_BELL_MS     20000  // 20s
+#define SLEEP_AFTER_SETUP_MS         2000   // 2s
+#define SLEEP_RELAY_AFTER_BELL_MS    15000  // 15s
+#define SLEEP_HTTP_AFTER_BELL_MS     15000  // 15s
 #define SLEEP_AFTER_WIFI_RETRY_MS    10000  // 10s
 #define MONITORING_INTERVAL_MS       100
 #define DEBOUNCE_MS                  50     // bell button debounce window
@@ -25,7 +25,7 @@
 // ---------------------------------------------------------------------------
 // HTTP backend
 // ---------------------------------------------------------------------------
-#define HTTP_SERVER_URL    "https://***"
+#define HTTP_SERVER_URL    "***"
 #define HTTP_SECURITY_CODE "***"
 #define HTTP_BELL_UUID     "***"
 
@@ -132,7 +132,7 @@ const String html_template_main = R"=====(
         <div class="col-12 col-md-6">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h4 class="card-title">Device</h4>
+                    <h2 class="card-title h4">Device</h2>
                     <hr>
                     <p><strong>Firmware Version:</strong> {{firmware}}</p>
                     <p><strong>Startup Time:</strong> {{startup}}</p>
@@ -145,7 +145,7 @@ const String html_template_main = R"=====(
         <div class="col-12 col-md-6">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h4 class="card-title">Network</h4>
+                    <h2 class="card-title h4">Network</h2>
                     <hr>
                     <p><strong>SSID:</strong> {{ssid}}</p>
                     <p><strong>IP Address:</strong> {{ip}}</p>
@@ -158,7 +158,7 @@ const String html_template_main = R"=====(
         <div class="col-12 col-md-6">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h4 class="card-title">MQTT</h4>
+                    <h2 class="card-title h4">MQTT</h2>
                     <hr>
                     <p><strong>Server:</strong> {{mqtt_server}}</p>
                     <p><strong>Connected:</strong> {{mqtt_connected}} (retries: {{mqtt_retries}})</p>
@@ -170,7 +170,7 @@ const String html_template_main = R"=====(
         <div class="col-12 col-md-6">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h4 class="card-title">Status</h4>
+                    <h2 class="card-title h4">Status</h2>
                     <hr>
                     <p><strong>WiFi Connection Retries:</strong> {{wifi_retries}}</p>
                     <p><strong>Bell Presses:</strong> {{bell_presses}}</p>
@@ -203,6 +203,10 @@ const String html_template_main = R"=====(
             <form action="/update" method="get">
                 <button type="submit" class="btn btn-danger w-100">Update Firmware</button>
             </form>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <button type="button" class="btn btn-dark w-100" onclick="if (confirm('Restart the device?')) executeAction('/restart')">Restart Device</button>
         </div>
 
     </div>

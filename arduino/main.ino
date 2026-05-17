@@ -316,8 +316,10 @@ void configureWebServer() {
   Serial.println("HTTP server started");
 }
 void configureIO() {
-  // setting pin as input
-  pinMode(bellButtonPin, INPUT);
+  // setting pin as input. External pullup is present on the board; the
+  // internal pullup is enabled too as a defensive backup (they parallel,
+  // no conflict).
+  pinMode(bellButtonPin, INPUT_PULLUP);
   pinMode(bellRelayPin, OUTPUT);
   digitalWrite(bellRelayPin, LOW);
 }
@@ -461,7 +463,6 @@ void activateRelay() {
   digitalWrite(bellRelayPin, HIGH);
   delay(RELAY_DURATION_MS);
   digitalWrite(bellRelayPin, LOW);
-  delay(RELAY_DURATION_MS);
   Serial.println("Relay was switched on/off.");
 }
 
