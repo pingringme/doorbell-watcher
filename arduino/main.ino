@@ -22,17 +22,20 @@ PubSubClient mqttClient(espClient);
 
 // variables
 IPAddress mqttServerIP;
-String startupDateTime;
+// Fixed-size buffers (no heap allocation): "YYYY-MM-DD HH:MM:SS" = 19 chars
+// + null terminator + safety margin.
+char startupDateTime[24] = "n/a";
+char lastRelayDateTime[24] = "never";
 bool isConfigured = false;
 int mqttRetries = 0;
 int wifiRetries = 0;
 int bellPresses = 0;
 int mqttDiscoverySent = 0;
 bool isSilenced = false;
-unsigned long lastBellTime = 0;
+unsigned long lastRelayTime = 0;
+unsigned long lastHttpTime = 0;
 unsigned long lastMqttReconnectAttempt = 0;
 int relayActivations = 0;
-String lastRelayDateTime = "never";
 
 String getMacAddress() {
     uint8_t mac[6];
@@ -82,6 +85,18 @@ bool waitForTimeSync(uint32_t timeoutMs) {
     return getLocalTime(&timeinfo, timeoutMs);
 }
 
+// Fill a fixed-size buffer with the current local date+time as
+// "YYYY-MM-DD HH:MM:SS". Falls back to "n/a" if the clock is not synced.
+// Avoids any heap allocation, so it's safe to call indefinitely.
+void fillDateTimeString(char* buf, size_t bufSize) {
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        snprintf(buf, bufSize, "n/a");
+        return;
+    }
+    strftime(buf, bufSize, "%Y-%m-%d %H:%M:%S", &timeinfo);
+}
+
 void setup() {
   // booting up with blue as initial color
   tp.DotStar_SetPixelColor(0, 0, 255);  //Blue
@@ -109,7 +124,7 @@ void setup() {
   // standard initial sleep...
   Serial.println("finishing initial setup()...");
   // print time
-  startupDateTime = getDateString() + " " + getTimeString();
+  fillDateTimeString(startupDateTime, sizeof(startupDateTime));
   Serial.println(startupDateTime);
   // delay after setup
   delay(SLEEP_AFTER_SETUP_MS);
@@ -375,7 +390,7 @@ void blinkPurple(int count) {
     // set purple
     tp.DotStar_SetPixelColor(128, 0, 128);  //purple
     // sleep
-    delay(100);
+    delay(75);
     // set green
     tp.DotStar_SetPixelColor(0, 128, 0);  //Green
     tmp--;
@@ -388,7 +403,7 @@ void blinkYellow(int count) {
     // set white
     tp.DotStar_SetPixelColor(255, 255, 255);  //White
     // sleep
-    delay(100);
+    delay(75);
     // set yellow
     tp.DotStar_SetPixelColor(255, 255, 0);  //Yellow
     tmp--;
@@ -458,7 +473,7 @@ void activateRelay() {
   Serial.println("Relay will be executed...");
   // observability: record that we actually issued the relay command
   relayActivations++;
-  lastRelayDateTime = getDateString() + " " + getTimeString();
+  fillDateTimeString(lastRelayDateTime, sizeof(lastRelayDateTime));
   // activating relay
   digitalWrite(bellRelayPin, HIGH);
   delay(RELAY_DURATION_MS);
@@ -471,30 +486,32 @@ void activateButton(const char* source) {
   // counter
   bellPresses++;
   // actions when button is pressed
-  blinkPurple(2);
+  blinkPurple(1);
   // triggers mqtt , no matter what, "ON" state  :)
   publishMqttState(source, "ON", true);
   // only rings the bell if not silenced and if there is enough time since
-  // last bell has been pressed. Note: (millis() - lastBellTime) is unsigned
-  // subtraction, which correctly handles the ~49-day millis() rollover.
-  // lastBellTime starts at 0 so the very first press always passes.
-  if (!isSilenced && (millis() - lastBellTime) >= SLEEP_RELAY_AFTER_BELL_MS) {
+  // the last *actual* relay activation. Note: (millis() - lastRelayTime)
+  // is unsigned subtraction, which correctly handles the ~49-day millis()
+  // rollover. lastRelayTime starts at 0 so the very first press always passes.
+  // IMPORTANT: lastRelayTime is updated ONLY when the relay actually fires,
+  // so impatient repeated presses do not keep extending the cooldown.
+  if (!isSilenced && (millis() - lastRelayTime) >= SLEEP_RELAY_AFTER_BELL_MS) {
     activateRelay();
+    lastRelayTime = millis();
   } else {
-    Serial.println("Bell is currently in silent mode and relay was not triggered...");
+    Serial.println("Bell is currently in silent mode or within cooldown; relay was not triggered.");
   }
-  // only send http request after some safe period
-  if ((millis() - lastBellTime) >= SLEEP_HTTP_AFTER_BELL_MS) {
+  // only send http request if enough time since the last *actual* HTTP send.
+  if ((millis() - lastHttpTime) >= SLEEP_HTTP_AFTER_BELL_MS) {
     sendHttpRequest();
+    lastHttpTime = millis();
   } else {
-    Serial.println("Bell is currently in silent mode and HTTP request was not triggered...");
+    Serial.println("HTTP request within cooldown; not triggered.");
   }
   // triggers mqtt , no matter what, "OFF" state, but without attributes  :)
   publishMqttState(source, "OFF", false);
   // debug
   Serial.println("Actions were executed.");
-  // keep track of the last bell...
-  lastBellTime = millis();
 }
 
 // Poll the bell GPIO with software debouncing. Triggers activateButton()

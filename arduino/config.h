@@ -6,17 +6,17 @@
 // ---------------------------------------------------------------------------
 // Firmware
 // ---------------------------------------------------------------------------
-#define FIRMWARE_VERSION "20260517105625"
+#define FIRMWARE_VERSION "20260517124314"
 
 // ---------------------------------------------------------------------------
 // Timings (milliseconds)
 // ---------------------------------------------------------------------------
-#define RELAY_DURATION_MS            750
-#define SLEEP_AFTER_SETUP_MS         2000   // 2s
-#define SLEEP_RELAY_AFTER_BELL_MS    15000  // 15s
-#define SLEEP_HTTP_AFTER_BELL_MS     15000  // 15s
-#define SLEEP_AFTER_WIFI_RETRY_MS    10000  // 10s
-#define MONITORING_INTERVAL_MS       100
+#define RELAY_DURATION_MS            750    // how long the relay should be active (doorbell rings for this duration)
+#define SLEEP_AFTER_SETUP_MS         2000   // wait this long after setup() before allowing button presses, to avoid issues during boot
+#define SLEEP_RELAY_AFTER_BELL_MS    15000  // after a bell press, do not allow another relay activation for this long, even if the button is pressed again (debounce + cooldown)
+#define SLEEP_HTTP_AFTER_BELL_MS     15000  // after a bell press, do not allow another HTTP request for this long
+#define SLEEP_AFTER_WIFI_RETRY_MS    5000   // after a failed WiFi connection attempt, wait this long before retrying, to avoid spamming the network
+#define MONITORING_INTERVAL_MS       100    // interval for monitoring tasks in loop(), such as checking button state, MQTT connection, etc. Keep this reasonably low for responsive button handling, but not too low to avoid excessive CPU usage.
 #define DEBOUNCE_MS                  50     // bell button debounce window
 #define NTP_SYNC_TIMEOUT_MS          10000  // wait up to this long for NTP at boot
 #define MQTT_RECONNECT_INTERVAL_MS   5000   // do not retry more often than this
@@ -185,27 +185,27 @@ const String html_template_main = R"=====(
 
     <h2 class="section-title">Actions</h2>
 
-    <div class="row g-3">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-3">
 
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col">
             <button type="button" class="btn btn-primary w-100" onclick="executeAction('/silence')">Toggle Silence</button>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col">
             <button type="button" class="btn btn-warning w-100" onclick="executeAction('/relay')">Relay Only</button>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col">
             <button type="button" class="btn btn-success w-100" onclick="executeAction('/button')">Bell Button</button>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col">
             <form action="/update" method="get">
                 <button type="submit" class="btn btn-danger w-100">Update Firmware</button>
             </form>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col">
             <button type="button" class="btn btn-dark w-100" onclick="if (confirm('Restart the device?')) executeAction('/restart')">Restart Device</button>
         </div>
 
