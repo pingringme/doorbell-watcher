@@ -11,7 +11,7 @@
 // ---------------------------------------------------------------------------
 // Timings (milliseconds)
 // ---------------------------------------------------------------------------
-#define RELAY_DURATION_MS            500
+#define RELAY_DURATION_MS            750
 #define SLEEP_AFTER_SETUP_MS         10000  // 10s
 #define SLEEP_RELAY_AFTER_BELL_MS    45000  // 45s
 #define SLEEP_HTTP_AFTER_BELL_MS     20000  // 20s
@@ -174,6 +174,8 @@ const String html_template_main = R"=====(
                     <hr>
                     <p><strong>WiFi Connection Retries:</strong> {{wifi_retries}}</p>
                     <p><strong>Bell Presses:</strong> {{bell_presses}}</p>
+                    <p><strong>Relay Activations:</strong> {{relay_activations}}</p>
+                    <p><strong>Last Relay Activation:</strong> {{relay_last}}</p>
                     <p><strong>Silence Mode:</strong> {{silence_mode}}</p>
                 </div>
             </div>

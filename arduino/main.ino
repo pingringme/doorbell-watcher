@@ -31,6 +31,8 @@ int mqttDiscoverySent = 0;
 bool isSilenced = false;
 unsigned long lastBellTime = 0;
 unsigned long lastMqttReconnectAttempt = 0;
+int relayActivations = 0;
+String lastRelayDateTime = "never";
 
 String getMacAddress() {
     uint8_t mac[6];
@@ -139,6 +141,8 @@ void handle_base() {
 
   page.replace("{{wifi_retries}}", String(wifiRetries));
   page.replace("{{bell_presses}}", String(bellPresses));
+  page.replace("{{relay_activations}}", String(relayActivations));
+  page.replace("{{relay_last}}", lastRelayDateTime);
   page.replace("{{silence_mode}}", isSilenced ? "true" : "false");
  
   // never cache this status page: values change constantly
@@ -450,6 +454,9 @@ void toggleSilence() {
 
 void activateRelay() {
   Serial.println("Relay will be executed...");
+  // observability: record that we actually issued the relay command
+  relayActivations++;
+  lastRelayDateTime = getDateString() + " " + getTimeString();
   // activating relay
   digitalWrite(bellRelayPin, HIGH);
   delay(RELAY_DURATION_MS);
