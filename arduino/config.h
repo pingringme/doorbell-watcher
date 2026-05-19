@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------------------
 // Firmware
 // ---------------------------------------------------------------------------
-#define FIRMWARE_VERSION "20260519085439"
+#define FIRMWARE_VERSION "20260519092053"
 
 // ---------------------------------------------------------------------------
 // Timings (milliseconds)
@@ -24,11 +24,25 @@
 #define HTTP_TIMEOUT_MS              3000   // outbound HTTPS request timeout. Kept tight: while the request is in flight the main loop cannot poll the button, so this bounds the worst-case release-detection delay. Sized to fit the AWS Lambda fan-out (SMS + WhatsApp + email) typical latency.
 
 // ---------------------------------------------------------------------------
-// HTTP backend
+// Notification backends
+// ---------------------------------------------------------------------------
+// Toggle each backend independently. Both can be enabled at once; they will
+// be fired sequentially from processPendingHttp() / activateButton().
+#define NOTIFY_AWS_ENABLED       0
+#define NOTIFY_TELEGRAM_ENABLED  0
+
+// ---------------------------------------------------------------------------
+// HTTP backend (AWS Lambda)
 // ---------------------------------------------------------------------------
 #define HTTP_SERVER_URL    "***"
 #define HTTP_SECURITY_CODE "***"
 #define HTTP_BELL_UUID     "***"
+
+// ---------------------------------------------------------------------------
+// Telegram backend (Bot API)
+// ---------------------------------------------------------------------------
+#define TELEGRAM_BOT_TOKEN "***"   // from @BotFather
+#define TELEGRAM_CHAT_ID   "***"   // numeric chat id or @channelname
 
 // ---------------------------------------------------------------------------
 // WiFi credentials

@@ -228,6 +228,14 @@ bool resolveMqttBroker() {
   return true;
 }
 
+// Shared Home Assistant MQTT discovery "device" sub-object. Identical
+// across every entity belonging to this device, so factored out to keep
+// the discovery payloads honest about that fact.
+static String mqttDeviceObject() {
+  return String("\"device\":{\"identifiers\":[\"") + mqtt_device_id +
+         "\"],\"manufacturer\":\"PingRing.me\",\"model\":\"PingRing Board\",\"name\":\"PingRing\"}";
+}
+
 // Publish Home Assistant MQTT discovery payloads. Caller must ensure the
 // client is connected.
 void publishMqttDiscovery() {
@@ -244,12 +252,7 @@ void publishMqttDiscovery() {
   discovery_payload += "\"availability_topic\": \"" + String(mqtt_topic_availability) + "\",";
   discovery_payload += "\"payload_available\": \"online\",";
   discovery_payload += "\"payload_not_available\": \"offline\",";
-  discovery_payload += "\"device\": {";
-  discovery_payload +=   "\"identifiers\": [\"" + String(mqtt_device_id) + "\"],";
-  discovery_payload +=   "\"manufacturer\": \"PingRing.me\",";
-  discovery_payload +=   "\"model\": \"PingRing Board\",";
-  discovery_payload +=   "\"name\": \"PingRing\"";
-  discovery_payload += "}";
+  discovery_payload += mqttDeviceObject();
   discovery_payload += "}";
   mqttClient.publish(mqtt_topic_discovery_state, discovery_payload.c_str(), true);
   mqttDiscoverySent++;
@@ -260,12 +263,7 @@ void publishMqttDiscovery() {
   discovery_payload += "\"state_topic\": \"" + String(mqtt_topic_count) + "\",";
   discovery_payload += "\"unit_of_measurement\": \"presses\",";
   discovery_payload += "\"state_class\": \"total_increasing\",";
-  discovery_payload += "\"device\": {";
-  discovery_payload +=   "\"identifiers\": [\"" + String(mqtt_device_id) + "\"],";
-  discovery_payload +=   "\"manufacturer\": \"PingRing.me\",";
-  discovery_payload +=   "\"model\": \"PingRing Board\",";
-  discovery_payload +=   "\"name\": \"PingRing\"";
-  discovery_payload += "}";
+  discovery_payload += mqttDeviceObject();
   discovery_payload += "}";
   mqttClient.publish(mqtt_topic_discovery_count, discovery_payload.c_str(), true);
   mqttDiscoverySent++;
@@ -394,31 +392,21 @@ void printWifiInfo() {
   Serial.println(WiFi.status());
 }
 
-void blinkPurple(int count) {
-  int tmp = count;
-  while (tmp > 0) {
-    // set purple
-    tp.DotStar_SetPixelColor(128, 0, 128);  //purple
-    // sleep
+// Shared blink primitive: flash (r1,g1,b1), hold 75ms, then settle on
+// (r2,g2,b2). Repeats `count` times. The settle color is the resting
+// state the caller wants to leave the LED in.
+static void blinkPattern(uint8_t r1, uint8_t g1, uint8_t b1,
+                         uint8_t r2, uint8_t g2, uint8_t b2,
+                         int count) {
+  while (count-- > 0) {
+    tp.DotStar_SetPixelColor(r1, g1, b1);
     delay(75);
-    // set green
-    tp.DotStar_SetPixelColor(0, 128, 0);  //Green
-    tmp--;
+    tp.DotStar_SetPixelColor(r2, g2, b2);
   }
 }
 
-void blinkYellow(int count) {
-  int tmp = count;
-  while (tmp > 0) {
-    // set white
-    tp.DotStar_SetPixelColor(255, 255, 255);  //White
-    // sleep
-    delay(75);
-    // set yellow
-    tp.DotStar_SetPixelColor(255, 255, 0);  //Yellow
-    tmp--;
-  }
-}
+void blinkPurple(int count) { blinkPattern(128, 0, 128,   0, 128, 0,   count); } // press feedback, settle on green
+void blinkYellow(int count) { blinkPattern(255, 255, 255, 255, 255, 0, count); } // wifi retry, settle on yellow
 
 void publishMqttState(const char* source, const char* state, bool sendAttributes) {
 
@@ -448,22 +436,79 @@ void publishMqttState(const char* source, const char* state, bool sendAttributes
   }
 }
 
-void sendHttpRequest() {
-  Serial.println("HTTP Request...");
-  // HTTPS: use a secure client. setInsecure() skips certificate validation;
-  // replace with setCACert(...) if you want to pin the backend's CA.
-  WiFiClientSecure secureClient;
-  secureClient.setInsecure();
+// ---------------------------------------------------------------------------
+// Notification backends
+// ---------------------------------------------------------------------------
+// Each backend is a small self-contained function that performs one HTTPS
+// request. dispatchNotifications() fans out to every enabled backend in
+// sequence. Backends are gated by compile-time flags in config.h
+// (NOTIFY_AWS_ENABLED, NOTIFY_TELEGRAM_ENABLED), so disabled ones cost
+// nothing in flash or runtime.
+//
+// All backends share HTTP_TIMEOUT_MS, share the deferred-send mechanism
+// (processPendingHttp), and share the post-press cooldown
+// (SLEEP_HTTP_AFTER_BELL_MS). Total worst-case stall is roughly
+// (#enabled_backends * HTTP_TIMEOUT_MS).
+
+// Shared HTTPS request helper. Owns the WiFiClientSecure + HTTPClient
+// lifetime so callers stay tiny. Pass body+contentType for POST, omit
+// them (or pass empty/nullptr) for GET. Returns the HTTP response code,
+// or a negative value on transport failure. Logs the response body when
+// the request failed, to keep debugging usable without spamming the
+// serial console on success.
+static int httpsSend(const char* name, const String& url,
+                     const char* method,
+                     const String& body = String(),
+                     const char* contentType = nullptr) {
+  Serial.print(name); Serial.println(" request...");
+  WiFiClientSecure client;
+  client.setInsecure(); // replace with setCACert(...) to pin the CA
   HTTPClient http;
   http.setTimeout(HTTP_TIMEOUT_MS);
-  if (!http.begin(secureClient, serverRequest)) {
-    Serial.println("HTTP begin() failed.");
-    return;
+  if (!http.begin(client, url)) {
+    Serial.print(name); Serial.println(": HTTP begin() failed.");
+    return -1;
   }
-  int httpResponseCode = http.GET();
-  Serial.print("HTTP Response Code: ");
-  Serial.println(httpResponseCode);
+  if (contentType) {
+    http.addHeader("Content-Type", contentType);
+  }
+  int code = (strcmp(method, "POST") == 0) ? http.POST(body) : http.GET();
+  Serial.print(name); Serial.print(" response: "); Serial.println(code);
+  if (code <= 0 || code >= 400) {
+    Serial.println(http.getString());
+  }
   http.end();
+  return code;
+}
+
+#if NOTIFY_AWS_ENABLED
+static void sendAwsNotification(const char* source) {
+  (void)source; // current Lambda contract is fully encoded in serverRequest
+  httpsSend("AWS", serverRequest, "GET");
+}
+#endif
+
+#if NOTIFY_TELEGRAM_ENABLED
+static void sendTelegramNotification(const char* source) {
+  String text = String("Doorbell ring (") + source + ") @ " +
+                getDateString() + " " + getTimeString();
+  String url  = String("https://api.telegram.org/bot") + TELEGRAM_BOT_TOKEN +
+                "/sendMessage?chat_id=" + TELEGRAM_CHAT_ID +
+                "&text=" + HTTPClient::urlEncode(text);
+  httpsSend("Telegram", url, "GET");
+}
+#endif
+
+// Fan out a notification to every enabled backend, in sequence.
+// Safe to call from loop() context (it blocks for up to
+// #backends * HTTP_TIMEOUT_MS in the absolute worst case).
+void dispatchNotifications(const char* source) {
+#if NOTIFY_AWS_ENABLED
+  sendAwsNotification(source);
+#endif
+#if NOTIFY_TELEGRAM_ENABLED
+  sendTelegramNotification(source);
+#endif
 }
 
 void toggleSilence() {
@@ -554,7 +599,7 @@ void activateButton(const char* source) {
   publishMqttState(source, "ON", true);
   pulseRelay();
   if ((millis() - lastHttpTime) >= SLEEP_HTTP_AFTER_BELL_MS) {
-    sendHttpRequest();
+    dispatchNotifications(source);
     lastHttpTime = millis();
   } else {
     Serial.println("HTTP request within cooldown; not triggered.");
@@ -601,7 +646,7 @@ void pollBellButton() {
     //
     // Order matters: drive the relay FIRST so the chime fires with minimum
     // latency, BEFORE any network I/O or LED feedback. publishMqttState()
-    // and (especially) sendHttpRequest() can block for seconds on a slow
+    // and (especially) dispatchNotifications() can block for seconds on a slow
     // network; if we did them first, a short press could end before the
     // relay was ever turned on.
     Serial.println("GPIO LOW (debounced) - press edge.");
@@ -629,16 +674,16 @@ void pollBellButton() {
   }
 }
 
-// Fire a deferred HTTPS webhook, if one is pending. Called from loop()
-// AFTER pollBellButton(), so a release edge that arrived in the same
-// iteration has already been processed (relay turned off) before we
-// block on the network. At most one HTTP send per pending flag.
+// Fire deferred notifications, if pending. Called from loop() AFTER
+// pollBellButton(), so a release edge that arrived in the same iteration
+// has already been processed (relay turned off) before we block on the
+// network. Fans out to every enabled backend via dispatchNotifications().
 void processPendingHttp() {
   if (!httpSendPending) {
     return;
   }
   httpSendPending = false;
-  sendHttpRequest();
+  dispatchNotifications("button");
   lastHttpTime = millis();
 }
 
