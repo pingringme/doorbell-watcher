@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------------------
 // Firmware
 // ---------------------------------------------------------------------------
-#define FIRMWARE_VERSION "20260519092725"
+#define FIRMWARE_VERSION "20260519093736"
 
 // ---------------------------------------------------------------------------
 // Timings (milliseconds)
@@ -28,68 +28,72 @@
 // ---------------------------------------------------------------------------
 // Toggle each backend independently. Both can be enabled at once; they will
 // be fired sequentially from processPendingHttp() / activateButton().
-#define NOTIFY_AWS_ENABLED       0
-#define NOTIFY_TELEGRAM_ENABLED  0
+// Runtime flags (matches mqtt_enabled style). Both backends are always
+// compiled into the binary; disabling one only skips the HTTPS call.
+const bool notify_aws_enabled      = false;
+const bool notify_telegram_enabled = false;
 
 // ---------------------------------------------------------------------------
 // HTTP backend (AWS Lambda)
 // ---------------------------------------------------------------------------
-#define HTTP_SERVER_URL    "***"
-#define HTTP_SECURITY_CODE "***"
-#define HTTP_BELL_UUID     "***"
+#define HTTP_SERVER_URL    "***"   // full HTTPS endpoint of the Lambda function URL / API Gateway (no query string)
+#define HTTP_SECURITY_CODE "***"   // shared secret validated server-side; rejects requests from anyone who finds the URL
+#define HTTP_BELL_UUID     "***"   // identifies which physical doorbell is ringing so the Lambda can route to the right recipients
 
 // ---------------------------------------------------------------------------
 // Telegram backend (Bot API)
 // ---------------------------------------------------------------------------
-#define TELEGRAM_BOT_TOKEN "***"   // from @BotFather
-#define TELEGRAM_CHAT_ID   "***"   // numeric chat id or @channelname
+#define TELEGRAM_BOT_TOKEN "***"   // bot token issued by @BotFather; treat as a secret
+#define TELEGRAM_CHAT_ID   "***"   // destination chat: numeric user/group id, or @channelname for public channels
 
 // ---------------------------------------------------------------------------
 // WiFi credentials
 // ---------------------------------------------------------------------------
-#define WIFI_SSID     "***"
-#define WIFI_PASSWORD "***"
+#define WIFI_SSID     "***"        // 2.4 GHz network name (ESP32 does not support 5 GHz)
+#define WIFI_PASSWORD "***"        // WPA2/WPA3 passphrase
 
 // ---------------------------------------------------------------------------
 // NTP
 // ---------------------------------------------------------------------------
-const char* ntpServer           = "pool.ntp.org";
-const long  gmtOffset_sec       = 3600; // +1h Berlin
-const int   daylightOffset_sec  = 3600; // +1h summer time
+const char* ntpServer           = "pool.ntp.org"; // public NTP pool; override with a LAN NTP server if available
+const long  gmtOffset_sec       = 3600;           // base UTC offset in seconds (+1h Berlin / CET)
+const int   daylightOffset_sec  = 3600;           // additional DST offset in seconds (+1h during summer time)
 
 // ---------------------------------------------------------------------------
 // WiFi
 // ---------------------------------------------------------------------------
-const char* hostname = "esp32-pingringme";
+const char* hostname = "esp32-pingringme"; // advertised hostname + mDNS name (resolves as esp32-pingringme.local)
 const char* ssid     = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
 
 // ---------------------------------------------------------------------------
 // MQTT
 // ---------------------------------------------------------------------------
-const bool  mqtt_enabled                = true;
-const char* mqtt_server_hostname_mdns   = "homeassistant"; // homeassistant.local
-const int   mqtt_port                   = 1883;
-const char* mqtt_auth_user              = "admin";
-const char* mqtt_auth_pass              = "***";
-const char* mqtt_device_id              = "pingringme-esp32";
-const char* mqtt_unique_id              = "pingringme_doorbell";
-const char* mqtt_topic_state            = "pingringme/doorbell/state";
-const char* mqtt_topic_count            = "pingringme/doorbell/count";
-const char* mqtt_topic_attributes       = "pingringme/doorbell/attributes";
-const char* mqtt_topic_availability     = "pingringme/status";
-const char* mqtt_topic_discovery_state  = "homeassistant/binary_sensor/pingringme_doorbell/config";
-const char* mqtt_topic_discovery_count  = "homeassistant/sensor/pingringme_doorbell_count/config";
+const bool  mqtt_enabled                = true;                                                            // master switch for all MQTT activity (publish + Home Assistant discovery)
+const char* mqtt_server_hostname_mdns   = "homeassistant";                                                 // broker hostname resolved via mDNS (homeassistant.local); change to a static IP if mDNS is unreliable
+const int   mqtt_port                   = 1883;                                                            // plain MQTT (not TLS); keep on a trusted LAN only
+const char* mqtt_auth_user              = "admin";                                                         // broker username
+const char* mqtt_auth_pass              = "***";                                                           // broker password
+const char* mqtt_device_id              = "pingringme-esp32";                                              // MQTT client id, also used as the Home Assistant device identifier
+const char* mqtt_unique_id              = "pingringme_doorbell";                                           // stable unique id for the HA entities; do not change after install or HA will create duplicates
+const char* mqtt_topic_state            = "pingringme/doorbell/state";                                     // binary_sensor payload: "ON" while button held, "OFF" on release
+const char* mqtt_topic_count            = "pingringme/doorbell/count";                                     // monotonically increasing press counter (sensor)
+const char* mqtt_topic_attributes       = "pingringme/doorbell/attributes";                               // JSON attributes (timestamp, source, etc.) attached to the binary_sensor
+const char* mqtt_topic_availability     = "pingringme/status";                                             // LWT topic: "online" / "offline" so HA shows the device as unavailable when it crashes
+const char* mqtt_topic_discovery_state  = "homeassistant/binary_sensor/pingringme_doorbell/config";        // HA MQTT auto-discovery config for the press state
+const char* mqtt_topic_discovery_count  = "homeassistant/sensor/pingringme_doorbell_count/config";         // HA MQTT auto-discovery config for the press counter
 
 // ---------------------------------------------------------------------------
 // Pins
 // ---------------------------------------------------------------------------
-const int bellButtonPin = 23;  // button press pin
-const int bellRelayPin  = 32;  // relay pin
+const int bellButtonPin = 23;  // input: doorbell button sense line (active level handled in main.ino)
+const int bellRelayPin  = 32;  // output: drives the relay that rings the chime
 
 // ---------------------------------------------------------------------------
 // HTTP request (built from the values above)
 // ---------------------------------------------------------------------------
+// Assembled once at startup so the hot path only does a single concatenation
+// of the final URL. Lambda contract: GET <HTTP_SERVER_URL>?action=bell&sec=<code>&uuid=<id>
 const String serverPath    = HTTP_SERVER_URL;
 const String action        = "?action=bell";
 const String security      = "&sec=";

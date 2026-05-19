@@ -441,9 +441,9 @@ void publishMqttState(const char* source, const char* state, bool sendAttributes
 // ---------------------------------------------------------------------------
 // Each backend is a small self-contained function that performs one HTTPS
 // request. dispatchNotifications() fans out to every enabled backend in
-// sequence. Backends are gated by compile-time flags in config.h
-// (NOTIFY_AWS_ENABLED, NOTIFY_TELEGRAM_ENABLED), so disabled ones cost
-// nothing in flash or runtime.
+// sequence. Backends are gated by runtime flags in config.h
+// (notify_aws_enabled, notify_telegram_enabled); disabled ones skip the
+// HTTPS call but still occupy flash.
 //
 // All backends share HTTP_TIMEOUT_MS, share the deferred-send mechanism
 // (processPendingHttp), and share the post-press cooldown
@@ -481,14 +481,11 @@ static int httpsSend(const char* name, const String& url,
   return code;
 }
 
-#if NOTIFY_AWS_ENABLED
 static void sendAwsNotification(const char* source) {
   (void)source; // current Lambda contract is fully encoded in serverRequest
   httpsSend("AWS", serverRequest, "GET");
 }
-#endif
 
-#if NOTIFY_TELEGRAM_ENABLED
 // Percent-encode a String for safe inclusion in a URL querystring value.
 // Keeps the RFC 3986 unreserved set; everything else becomes %HH. Avoids
 // the +-for-space form (some clients render it literally). Local helper
@@ -523,18 +520,17 @@ static void sendTelegramNotification(const char* source) {
                 "&text=" + urlEncode(text);
   httpsSend("Telegram", url, "GET");
 }
-#endif
 
 // Fan out a notification to every enabled backend, in sequence.
 // Safe to call from loop() context (it blocks for up to
 // #backends * HTTP_TIMEOUT_MS in the absolute worst case).
 void dispatchNotifications(const char* source) {
-#if NOTIFY_AWS_ENABLED
-  sendAwsNotification(source);
-#endif
-#if NOTIFY_TELEGRAM_ENABLED
-  sendTelegramNotification(source);
-#endif
+  if (notify_aws_enabled) {
+    sendAwsNotification(source);
+  }
+  if (notify_telegram_enabled) {
+    sendTelegramNotification(source);
+  }
 }
 
 void toggleSilence() {
