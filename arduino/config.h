@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------------------
 // Firmware
 // ---------------------------------------------------------------------------
-#define FIRMWARE_VERSION "20260519085118"
+#define FIRMWARE_VERSION "20260519085439"
 
 // ---------------------------------------------------------------------------
 // Timings (milliseconds)
@@ -17,7 +17,7 @@
 #define SLEEP_RELAY_AFTER_BELL_MS    15000  // after a bell press, do not allow another relay activation for this long, even if the button is pressed again (debounce + cooldown)
 #define SLEEP_HTTP_AFTER_BELL_MS     15000  // after a bell press, do not allow another HTTP request for this long
 #define SLEEP_AFTER_WIFI_RETRY_MS    5000   // after a failed WiFi connection attempt, wait this long before retrying, to avoid spamming the network
-#define MONITORING_INTERVAL_MS       100    // interval for monitoring tasks in loop(), such as checking button state, MQTT connection, etc. Keep this reasonably low for responsive button handling, but not too low to avoid excessive CPU usage.
+#define MONITORING_INTERVAL_MS       25     // interval between loop() iterations. Kept well below DEBOUNCE_MS (50) so the debounce filter gets at least 2 samples per window. Also bounds release-edge detection latency.
 #define DEBOUNCE_MS                  50     // bell button debounce window
 #define NTP_SYNC_TIMEOUT_MS          10000  // wait up to this long for NTP at boot
 #define MQTT_RECONNECT_INTERVAL_MS   5000   // do not retry more often than this
