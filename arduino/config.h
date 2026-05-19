@@ -6,12 +6,13 @@
 // ---------------------------------------------------------------------------
 // Firmware
 // ---------------------------------------------------------------------------
-#define FIRMWARE_VERSION "20260517124314"
+#define FIRMWARE_VERSION "20260519085118"
 
 // ---------------------------------------------------------------------------
 // Timings (milliseconds)
 // ---------------------------------------------------------------------------
-#define RELAY_DURATION_MS            750    // how long the relay should be active (doorbell rings for this duration)
+#define RELAY_DURATION_MS            750    // how long the relay should be active when triggered via HTTP (/relay or /button), i.e. without a physical press to mirror
+#define RELAY_MAX_ON_MS              3000   // hard safety cap: never hold the relay on for longer than this, even if the physical button is stuck or held forever
 #define SLEEP_AFTER_SETUP_MS         2000   // wait this long after setup() before allowing button presses, to avoid issues during boot
 #define SLEEP_RELAY_AFTER_BELL_MS    15000  // after a bell press, do not allow another relay activation for this long, even if the button is pressed again (debounce + cooldown)
 #define SLEEP_HTTP_AFTER_BELL_MS     15000  // after a bell press, do not allow another HTTP request for this long
@@ -20,7 +21,7 @@
 #define DEBOUNCE_MS                  50     // bell button debounce window
 #define NTP_SYNC_TIMEOUT_MS          10000  // wait up to this long for NTP at boot
 #define MQTT_RECONNECT_INTERVAL_MS   5000   // do not retry more often than this
-#define HTTP_TIMEOUT_MS              5000   // outbound HTTPS request timeout
+#define HTTP_TIMEOUT_MS              3000   // outbound HTTPS request timeout. Kept tight: while the request is in flight the main loop cannot poll the button, so this bounds the worst-case release-detection delay. Sized to fit the AWS Lambda fan-out (SMS + WhatsApp + email) typical latency.
 
 // ---------------------------------------------------------------------------
 // HTTP backend

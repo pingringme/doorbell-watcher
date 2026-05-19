@@ -36,6 +36,16 @@ unsigned long lastRelayTime = 0;
 unsigned long lastHttpTime = 0;
 unsigned long lastMqttReconnectAttempt = 0;
 int relayActivations = 0;
+// Mirror-mode relay state: while the physical bell button is held down, the
+// relay is held HIGH. These are written by relaySetOn/relaySetOff (called
+// from pollBellButton) and read by the safety force-off check.
+bool relayOn = false;
+unsigned long relayOnSince = 0;
+// Deferred-HTTP flag: set on a press edge when the cooldown allows it, and
+// consumed AFTER pollBellButton() so the release edge can be observed before
+// the blocking HTTPS call is made. This keeps short presses from holding the
+// relay on for the full HTTP timeout window.
+bool httpSendPending = false;
 
 String getMacAddress() {
     uint8_t mac[6];
@@ -181,8 +191,8 @@ void handle_relay() {
   Serial.println("GET /relay");
   // send browser/client result
   server.send(200, "application/json", "{\"action\":\"relay\",\"result\":true}");
-  // relay trigger
-  activateRelay();
+  // relay trigger (fixed-duration pulse: no physical press to mirror)
+  pulseRelay();
 }
 // button URL handling
 void handle_button() {
@@ -469,71 +479,167 @@ void toggleSilence() {
   Serial.println(isSilenced ? "true" : "false");
 }
 
-void activateRelay() {
-  Serial.println("Relay will be executed...");
-  // observability: record that we actually issued the relay command
+// Non-blocking relay control used by the physical-button mirror path.
+// Respects silence mode and the post-release cooldown. Safe to call
+// repeatedly: it only acts on state transitions.
+void relaySetOn() {
+  if (relayOn) {
+    return; // already on, nothing to do
+  }
+  if (isSilenced) {
+    Serial.println("Relay ON suppressed: silenced.");
+    return;
+  }
+  if ((millis() - lastRelayTime) < SLEEP_RELAY_AFTER_BELL_MS) {
+    Serial.println("Relay ON suppressed: within cooldown.");
+    return;
+  }
+  digitalWrite(bellRelayPin, HIGH);
+  relayOn = true;
+  relayOnSince = millis();
   relayActivations++;
   fillDateTimeString(lastRelayDateTime, sizeof(lastRelayDateTime));
-  // activating relay
+  Serial.println("Relay ON (mirroring button).");
+}
+
+void relaySetOff() {
+  if (!relayOn) {
+    return;
+  }
+  digitalWrite(bellRelayPin, LOW);
+  relayOn = false;
+  // start the cooldown from the moment the relay is actually released,
+  // so back-to-back presses are throttled but a single long hold is not
+  // penalized any further than its own duration.
+  lastRelayTime = millis();
+  Serial.println("Relay OFF.");
+}
+
+// Blocking fixed-duration pulse, used by the HTTP-triggered paths
+// (/relay and the simulated /button) where there is no physical press
+// to mirror. Bails out if the relay is currently being held by the
+// mirror path, to avoid fighting over the GPIO.
+void pulseRelay() {
+  if (relayOn) {
+    Serial.println("pulseRelay() skipped: relay already held by physical button.");
+    return;
+  }
+  if (isSilenced) {
+    Serial.println("pulseRelay() skipped: silenced.");
+    return;
+  }
+  if ((millis() - lastRelayTime) < SLEEP_RELAY_AFTER_BELL_MS) {
+    Serial.println("pulseRelay() skipped: within cooldown.");
+    return;
+  }
+  Serial.println("Relay pulse will be executed...");
+  relayActivations++;
+  fillDateTimeString(lastRelayDateTime, sizeof(lastRelayDateTime));
   digitalWrite(bellRelayPin, HIGH);
   delay(RELAY_DURATION_MS);
   digitalWrite(bellRelayPin, LOW);
-  Serial.println("Relay was switched on/off.");
+  lastRelayTime = millis();
+  Serial.println("Relay pulse completed.");
 }
 
+// HTTP-simulated button press (via /button). Does the full press
+// sequence (MQTT ON, optional HTTP webhook, fixed relay pulse,
+// MQTT OFF). The physical button does NOT go through this function;
+// it is handled edge-by-edge in pollBellButton() so it can mirror
+// the press duration.
 void activateButton(const char* source) {
-  Serial.println("Button Pressed....");
-  // counter
+  Serial.println("Button Pressed (simulated)....");
   bellPresses++;
-  // actions when button is pressed
   blinkPurple(1);
-  // triggers mqtt , no matter what, "ON" state  :)
   publishMqttState(source, "ON", true);
-  // only rings the bell if not silenced and if there is enough time since
-  // the last *actual* relay activation. Note: (millis() - lastRelayTime)
-  // is unsigned subtraction, which correctly handles the ~49-day millis()
-  // rollover. lastRelayTime starts at 0 so the very first press always passes.
-  // IMPORTANT: lastRelayTime is updated ONLY when the relay actually fires,
-  // so impatient repeated presses do not keep extending the cooldown.
-  if (!isSilenced && (millis() - lastRelayTime) >= SLEEP_RELAY_AFTER_BELL_MS) {
-    activateRelay();
-    lastRelayTime = millis();
-  } else {
-    Serial.println("Bell is currently in silent mode or within cooldown; relay was not triggered.");
-  }
-  // only send http request if enough time since the last *actual* HTTP send.
+  pulseRelay();
   if ((millis() - lastHttpTime) >= SLEEP_HTTP_AFTER_BELL_MS) {
     sendHttpRequest();
     lastHttpTime = millis();
   } else {
     Serial.println("HTTP request within cooldown; not triggered.");
   }
-  // triggers mqtt , no matter what, "OFF" state, but without attributes  :)
   publishMqttState(source, "OFF", false);
-  // debug
   Serial.println("Actions were executed.");
 }
 
-// Poll the bell GPIO with software debouncing. Triggers activateButton()
-// on a clean HIGH->LOW transition once the reading has been stable for
-// DEBOUNCE_MS. Safe to call every loop() iteration.
+// Poll the bell GPIO with software debouncing and MIRROR the relay to
+// the debounced button state: relay is held HIGH for the duration of
+// the press and released when the button is released. Side effects
+// (counter, MQTT, HTTP webhook, LED blink) fire only on the press edge.
+// A hard safety cap (RELAY_MAX_ON_MS) force-releases the relay if the
+// button is stuck or held abusively long. Safe to call every loop().
 void pollBellButton() {
   static int lastReading = HIGH;
   static int debouncedState = HIGH;
   static unsigned long lastDebounceChange = 0;
 
+  // --- safety: force-off if held beyond the cap ---------------------------
+  // Done first, every iteration, so it runs even when no edge happens.
+  if (relayOn && (millis() - relayOnSince) >= RELAY_MAX_ON_MS) {
+    Serial.println("Relay max-on reached, forcing OFF (safety).");
+    relaySetOff();
+  }
+
+  // --- debounce -----------------------------------------------------------
   int reading = digitalRead(bellButtonPin);
   if (reading != lastReading) {
     lastDebounceChange = millis();
     lastReading = reading;
   }
-  if ((millis() - lastDebounceChange) >= DEBOUNCE_MS && reading != debouncedState) {
-    debouncedState = reading;
-    if (debouncedState == LOW) {
-      Serial.println("GPIO LOW detection (debounced).....");
-      activateButton("button");
-    }
+  if ((millis() - lastDebounceChange) < DEBOUNCE_MS) {
+    return; // not stable yet
   }
+  if (reading == debouncedState) {
+    return; // no edge
+  }
+  debouncedState = reading;
+
+  // --- edge handling ------------------------------------------------------
+  if (debouncedState == LOW) {
+    // PRESS edge.
+    //
+    // Order matters: drive the relay FIRST so the chime fires with minimum
+    // latency, BEFORE any network I/O or LED feedback. publishMqttState()
+    // and (especially) sendHttpRequest() can block for seconds on a slow
+    // network; if we did them first, a short press could end before the
+    // relay was ever turned on.
+    Serial.println("GPIO LOW (debounced) - press edge.");
+    relaySetOn();
+    bellPresses++;
+    blinkPurple(1);
+    publishMqttState("button", "ON", true);
+    if ((millis() - lastHttpTime) >= SLEEP_HTTP_AFTER_BELL_MS) {
+      // Defer the actual HTTPS call: do NOT block here, otherwise a slow
+      // backend would prevent the release edge from being seen for the
+      // whole HTTP_TIMEOUT_MS window. processPendingHttp() will fire it
+      // from loop() after pollBellButton() returns.
+      httpSendPending = true;
+    } else {
+      Serial.println("HTTP request within cooldown; not triggered.");
+    }
+  } else {
+    // RELEASE edge.
+    //
+    // Same reasoning: release the relay FIRST so the chime stops promptly,
+    // then announce the OFF state over MQTT.
+    Serial.println("GPIO HIGH (debounced) - release edge.");
+    relaySetOff();
+    publishMqttState("button", "OFF", false);
+  }
+}
+
+// Fire a deferred HTTPS webhook, if one is pending. Called from loop()
+// AFTER pollBellButton(), so a release edge that arrived in the same
+// iteration has already been processed (relay turned off) before we
+// block on the network. At most one HTTP send per pending flag.
+void processPendingHttp() {
+  if (!httpSendPending) {
+    return;
+  }
+  httpSendPending = false;
+  sendHttpRequest();
+  lastHttpTime = millis();
 }
 
 void loop() {
@@ -546,6 +652,10 @@ void loop() {
   watchWifi();
   // monitor the bell (debounced)
   pollBellButton();
+  // fire any deferred HTTP webhook from the most recent press edge.
+  // Done AFTER pollBellButton() so a same-iteration release edge has
+  // already turned the relay off before we block on the network.
+  processPendingHttp();
   // handle HTML requests
   server.handleClient();
   // handle OTA and reboot
