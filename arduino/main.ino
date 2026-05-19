@@ -489,12 +489,38 @@ static void sendAwsNotification(const char* source) {
 #endif
 
 #if NOTIFY_TELEGRAM_ENABLED
+// Percent-encode a String for safe inclusion in a URL querystring value.
+// Keeps the RFC 3986 unreserved set; everything else becomes %HH. Avoids
+// the +-for-space form (some clients render it literally). Local helper
+// because arduino-esp32's upstream HTTPClient does not expose urlEncode
+// in its public API.
+static String urlEncode(const String& in) {
+  static const char hex[] = "0123456789ABCDEF";
+  String out;
+  out.reserve(in.length() * 3);
+  for (size_t i = 0; i < in.length(); ++i) {
+    uint8_t c = (uint8_t)in[i];
+    bool unreserved = (c >= '0' && c <= '9') ||
+                      (c >= 'A' && c <= 'Z') ||
+                      (c >= 'a' && c <= 'z') ||
+                      c == '-' || c == '_' || c == '.' || c == '~';
+    if (unreserved) {
+      out += (char)c;
+    } else {
+      out += '%';
+      out += hex[c >> 4];
+      out += hex[c & 0x0F];
+    }
+  }
+  return out;
+}
+
 static void sendTelegramNotification(const char* source) {
   String text = String("Doorbell ring (") + source + ") @ " +
                 getDateString() + " " + getTimeString();
   String url  = String("https://api.telegram.org/bot") + TELEGRAM_BOT_TOKEN +
                 "/sendMessage?chat_id=" + TELEGRAM_CHAT_ID +
-                "&text=" + HTTPClient::urlEncode(text);
+                "&text=" + urlEncode(text);
   httpsSend("Telegram", url, "GET");
 }
 #endif
