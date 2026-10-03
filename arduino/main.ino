@@ -9,6 +9,7 @@
 #include <ElegantOTA.h>
 #include <PubSubClient.h>
 #include <WiFiClientSecure.h>
+#include "esp_netif.h"
 #include "time.h"
 #include "config.h"
 
@@ -107,6 +108,22 @@ void fillDateTimeString(char* buf, size_t bufSize) {
     strftime(buf, bufSize, "%Y-%m-%d %H:%M:%S", &timeinfo);
 }
 
+// DHCP lease renewals overwrite DNS, so this is re-applied before every HTTPS request.
+void applyDnsOverride() {
+  IPAddress primary, secondary;
+  if (!primary.fromString(dns_override_primary)) {
+    return;
+  }
+  esp_netif_dns_info_t dns = {};
+  dns.ip.type = ESP_IPADDR_TYPE_V4;
+  dns.ip.u_addr.ip4.addr = static_cast<uint32_t>(primary);
+  esp_netif_set_dns_info(WiFi.STA.netif(), ESP_NETIF_DNS_MAIN, &dns);
+  if (secondary.fromString(dns_override_secondary)) {
+    dns.ip.u_addr.ip4.addr = static_cast<uint32_t>(secondary);
+    esp_netif_set_dns_info(WiFi.STA.netif(), ESP_NETIF_DNS_BACKUP, &dns);
+  }
+}
+
 void setup() {
   // booting up with blue as initial color
   tp.DotStar_SetPixelColor(0, 0, 255);  //Blue
@@ -146,6 +163,11 @@ String enabledBadge(bool enabled) {
                  : "<span class=\"badge bg-secondary\">disabled</span>";
 }
 
+// "***" is the placeholder used for secrets in the committed config.h.
+bool isSecretSet(const char* value) {
+  return strlen(value) > 0 && strcmp(value, "***") != 0;
+}
+
 // base URL handling
 void handle_base() {
   Serial.println("ESP32 Web Server: New request received...");  // for debugging
@@ -163,6 +185,8 @@ void handle_base() {
   page.replace("{{ip}}", WiFi.localIP().toString());
   page.replace("{{rssi}}", String(WiFi.RSSI()) + " dBm");
   page.replace("{{mac}}", getMacAddress());
+  page.replace("{{dns}}", WiFi.dnsIP(0).toString() + ", " + WiFi.dnsIP(1).toString() +
+                          (strlen(dns_override_primary) > 0 ? " (override)" : " (DHCP)"));
 
   page.replace("{{mqtt_server}}", "mqtt://" + String(mqtt_auth_user) + ":***@" + mqttServerIP.toString() + ":" + String(mqtt_port));
   page.replace("{{mqtt_connected}}", mqttClient.connected() ? "true" : "false");
@@ -178,8 +202,8 @@ void handle_base() {
   page.replace("{{cfg_mqtt}}", enabledBadge(mqtt_enabled));
   page.replace("{{cfg_aws}}", enabledBadge(notify_aws_enabled));
   page.replace("{{cfg_telegram}}", enabledBadge(notify_telegram_enabled));
-  page.replace("{{cfg_telegram_token}}", strlen(TELEGRAM_BOT_TOKEN) > 0 ? "set" : "missing");
-  page.replace("{{cfg_telegram_chat}}", strlen(TELEGRAM_CHAT_ID) > 0 ? TELEGRAM_CHAT_ID : "missing");
+  page.replace("{{cfg_telegram_token}}", isSecretSet(TELEGRAM_BOT_TOKEN) ? "set" : "missing");
+  page.replace("{{cfg_telegram_chat}}", isSecretSet(TELEGRAM_CHAT_ID) ? TELEGRAM_CHAT_ID : "missing");
  
   // never cache this status page: values change constantly
   server.sendHeader("Cache-Control", "no-store");
@@ -395,6 +419,7 @@ void watchWifi() {
     tp.DotStar_SetPixelColor(0, 128, 0);  //Green
     // logging...
     printWifiInfo();
+    applyDnsOverride();
 
   }
 }
@@ -463,6 +488,9 @@ void publishMqttState(const char* source, const char* state, bool sendAttributes
 // (SLEEP_HTTP_AFTER_BELL_MS). Total worst-case stall is roughly
 // (#enabled_backends * HTTP_TIMEOUT_MS).
 
+// Detail of the most recent httpsSend() failure; empty on success.
+String lastHttpsError;
+
 // Shared HTTPS request helper. Owns the WiFiClientSecure + HTTPClient
 // lifetime so callers stay tiny. Pass body+contentType for POST, omit
 // them (or pass empty/nullptr) for GET. Returns the HTTP response code,
@@ -474,12 +502,16 @@ static int httpsSend(const char* name, const String& url,
                      const String& body = String(),
                      const char* contentType = nullptr) {
   Serial.print(name); Serial.println(" request...");
+  lastHttpsError = "";
+  applyDnsOverride();
+  uint32_t heapBefore = ESP.getFreeHeap();
   WiFiClientSecure client;
   client.setInsecure(); // replace with setCACert(...) to pin the CA
   HTTPClient http;
   http.setTimeout(HTTP_TIMEOUT_MS);
   if (!http.begin(client, url)) {
-    Serial.print(name); Serial.println(": HTTP begin() failed.");
+    lastHttpsError = "HTTP begin() failed (invalid URL?)";
+    Serial.print(name); Serial.print(": "); Serial.println(lastHttpsError);
     return -1;
   }
   if (contentType) {
@@ -487,8 +519,16 @@ static int httpsSend(const char* name, const String& url,
   }
   int code = (strcmp(method, "POST") == 0) ? http.POST(body) : http.GET();
   Serial.print(name); Serial.print(" response: "); Serial.println(code);
-  if (code <= 0 || code >= 400) {
-    Serial.println(http.getString());
+  if (code < 0) {
+    char tlsErr[100] = "";
+    int tlsCode = client.lastError(tlsErr, sizeof(tlsErr));
+    lastHttpsError = HTTPClient::errorToString(code) + "; tls " + tlsCode + ": " + tlsErr +
+                     "; free heap before request: " + heapBefore;
+  } else if (code >= 400) {
+    lastHttpsError = http.getString();
+  }
+  if (lastHttpsError.length() > 0) {
+    Serial.println(lastHttpsError);
   }
   http.end();
   return code;
@@ -550,10 +590,16 @@ void handle_notify() {
     return;
   }
   bool ok = code >= 200 && code < 300;
+  String detail = lastHttpsError;
+  detail.replace("\\", "\\\\");
+  detail.replace("\"", "\\\"");
+  detail.replace("\r", "");
+  detail.replace("\n", " ");
   server.send(ok ? 200 : 502, "application/json",
               String("{\"action\":\"notify\",\"backend\":\"") + backend +
               "\",\"result\":" + (ok ? "true" : "false") +
-              ",\"code\":" + code + "}");
+              ",\"code\":" + code +
+              ",\"detail\":\"" + detail + "\"}");
 }
 
 // Fan out a notification to every enabled backend, in sequence.

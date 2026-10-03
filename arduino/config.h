@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------------------
 // Firmware
 // ---------------------------------------------------------------------------
-#define FIRMWARE_VERSION "20260519093736"
+#define FIRMWARE_VERSION "20261003222246"
 
 // ---------------------------------------------------------------------------
 // Timings (milliseconds)
@@ -65,6 +65,8 @@ const int   daylightOffset_sec  = 3600;           // additional DST offset in se
 const char* hostname = "esp32-pingringme"; // advertised hostname + mDNS name (resolves as esp32-pingringme.local)
 const char* ssid     = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
+const char* dns_override_primary   = "8.8.8.8";   // empty = use the router's DNS (DHCP)
+const char* dns_override_secondary = "1.1.1.1";   // only used if primary is set
 
 // ---------------------------------------------------------------------------
 // MQTT
@@ -124,30 +126,33 @@ const String html_template_main = R"=====(
         .section-title { margin-top: 25px; }
     </style>
     <script>
-        function executeAction(url) {
+        function showResponse(url, status, body) {
+          var out = document.getElementById('response');
+          out.value = new Date().toLocaleTimeString() + '  GET ' + url + '  -> ' + status + '\n' + body + '\n\n' + out.value;
+          // survives the location.reload() done after state-changing actions
+          sessionStorage.setItem('response', out.value);
+        }
+        function executeAction(url, reload) {
           fetch(url)
               .then(function (response) {
-                  if (!response.ok) {
-                      throw new Error('HTTP ' + response.status);
-                  }
-                  location.reload();
+                  return response.text().then(function (body) {
+                      showResponse(url, response.status, body);
+                      if (response.ok && reload) {
+                          location.reload();
+                      }
+                  });
               })
               .catch(function (err) {
-                  alert('Request failed: ' + err.message);
+                  showResponse(url, 'error', err.message);
               });
         }
-        function testNotify(backend) {
-          fetch('/notify?backend=' + encodeURIComponent(backend))
-              .then(function (response) { return response.json(); })
-              .then(function (data) {
-                  alert(data.result
-                      ? backend + ' sent (HTTP ' + data.code + ').'
-                      : backend + ' failed (' + (data.error || 'HTTP ' + data.code) + '). Check the serial log.');
-              })
-              .catch(function (err) {
-                  alert('Request failed: ' + err.message);
-              });
+        function clearResponse() {
+          document.getElementById('response').value = '';
+          sessionStorage.removeItem('response');
         }
+        window.addEventListener('DOMContentLoaded', function () {
+          document.getElementById('response').value = sessionStorage.getItem('response') || '';
+        });
     </script>
 </head>
 
@@ -182,6 +187,7 @@ const String html_template_main = R"=====(
                     <p><strong>IP Address:</strong> {{ip}}</p>
                     <p><strong>RSSI:</strong> {{rssi}}</p>
                     <p><strong>MAC Address:</strong> {{mac}}</p>
+                    <p><strong>DNS:</strong> {{dns}}</p>
                 </div>
             </div>
         </div>
@@ -222,8 +228,8 @@ const String html_template_main = R"=====(
                     <p><strong>Telegram Notifications:</strong> {{cfg_telegram}}</p>
                     <p><strong>Telegram Bot Token:</strong> {{cfg_telegram_token}}</p>
                     <p><strong>Telegram Chat ID:</strong> {{cfg_telegram_chat}}</p>
-                    <button type="button" class="btn btn-info" onclick="if (confirm('This triggers the real Lambda fan-out (SMS/WhatsApp/email). Continue?')) testNotify('aws')">Test AWS</button>
-                    <button type="button" class="btn btn-info" onclick="testNotify('telegram')">Test Telegram</button>
+                    <button type="button" class="btn btn-info" onclick="if (confirm('This triggers the real Lambda fan-out (SMS/WhatsApp/email). Continue?')) executeAction('/notify?backend=aws', false)">Test AWS</button>
+                    <button type="button" class="btn btn-info" onclick="executeAction('/notify?backend=telegram', false)">Test Telegram</button>
                 </div>
             </div>
         </div>
@@ -235,15 +241,15 @@ const String html_template_main = R"=====(
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-3">
 
         <div class="col">
-            <button type="button" class="btn btn-primary w-100" onclick="executeAction('/silence')">Toggle Silence</button>
+            <button type="button" class="btn btn-primary w-100" onclick="executeAction('/silence', true)">Toggle Silence</button>
         </div>
 
         <div class="col">
-            <button type="button" class="btn btn-warning w-100" onclick="executeAction('/relay')">Relay Only</button>
+            <button type="button" class="btn btn-warning w-100" onclick="executeAction('/relay', true)">Relay Only</button>
         </div>
 
         <div class="col">
-            <button type="button" class="btn btn-success w-100" onclick="executeAction('/button')">Bell Button</button>
+            <button type="button" class="btn btn-success w-100" onclick="executeAction('/button', true)">Bell Button</button>
         </div>
 
         <div class="col">
@@ -253,10 +259,16 @@ const String html_template_main = R"=====(
         </div>
 
         <div class="col">
-            <button type="button" class="btn btn-dark w-100" onclick="if (confirm('Restart the device?')) executeAction('/restart')">Restart Device</button>
+            <button type="button" class="btn btn-dark w-100" onclick="if (confirm('Restart the device?')) executeAction('/restart', false)">Restart Device</button>
         </div>
 
     </div>
+
+    <div class="d-flex justify-content-between align-items-center section-title mb-2">
+        <h2 class="h4 mb-0">Response</h2>
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearResponse()">Clear</button>
+    </div>
+    <textarea id="response" class="form-control font-monospace" rows="8" readonly></textarea>
 
 </div>
 </body>
