@@ -136,6 +136,18 @@ const String html_template_main = R"=====(
                   alert('Request failed: ' + err.message);
               });
         }
+        function testNotify(backend) {
+          fetch('/notify?backend=' + encodeURIComponent(backend))
+              .then(function (response) { return response.json(); })
+              .then(function (data) {
+                  alert(data.result
+                      ? backend + ' sent (HTTP ' + data.code + ').'
+                      : backend + ' failed (' + (data.error || 'HTTP ' + data.code) + '). Check the serial log.');
+              })
+              .catch(function (err) {
+                  alert('Request failed: ' + err.message);
+              });
+        }
     </script>
 </head>
 
@@ -196,6 +208,22 @@ const String html_template_main = R"=====(
                     <p><strong>Relay Activations:</strong> {{relay_activations}}</p>
                     <p><strong>Last Relay Activation:</strong> {{relay_last}}</p>
                     <p><strong>Silence Mode:</strong> {{silence_mode}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="card-title h4">Configuration</h2>
+                    <hr>
+                    <p><strong>MQTT:</strong> {{cfg_mqtt}}</p>
+                    <p><strong>AWS Lambda Notifications:</strong> {{cfg_aws}}</p>
+                    <p><strong>Telegram Notifications:</strong> {{cfg_telegram}}</p>
+                    <p><strong>Telegram Bot Token:</strong> {{cfg_telegram_token}}</p>
+                    <p><strong>Telegram Chat ID:</strong> {{cfg_telegram_chat}}</p>
+                    <button type="button" class="btn btn-info" onclick="if (confirm('This triggers the real Lambda fan-out (SMS/WhatsApp/email). Continue?')) testNotify('aws')">Test AWS</button>
+                    <button type="button" class="btn btn-info" onclick="testNotify('telegram')">Test Telegram</button>
                 </div>
             </div>
         </div>

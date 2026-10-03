@@ -141,6 +141,11 @@ void setup() {
   // release
   isConfigured = true;
 }
+String enabledBadge(bool enabled) {
+  return enabled ? "<span class=\"badge bg-success\">enabled</span>"
+                 : "<span class=\"badge bg-secondary\">disabled</span>";
+}
+
 // base URL handling
 void handle_base() {
   Serial.println("ESP32 Web Server: New request received...");  // for debugging
@@ -169,6 +174,12 @@ void handle_base() {
   page.replace("{{relay_activations}}", String(relayActivations));
   page.replace("{{relay_last}}", lastRelayDateTime);
   page.replace("{{silence_mode}}", isSilenced ? "true" : "false");
+
+  page.replace("{{cfg_mqtt}}", enabledBadge(mqtt_enabled));
+  page.replace("{{cfg_aws}}", enabledBadge(notify_aws_enabled));
+  page.replace("{{cfg_telegram}}", enabledBadge(notify_telegram_enabled));
+  page.replace("{{cfg_telegram_token}}", strlen(TELEGRAM_BOT_TOKEN) > 0 ? "set" : "missing");
+  page.replace("{{cfg_telegram_chat}}", strlen(TELEGRAM_CHAT_ID) > 0 ? TELEGRAM_CHAT_ID : "missing");
  
   // never cache this status page: values change constantly
   server.sendHeader("Cache-Control", "no-store");
@@ -328,6 +339,8 @@ void configureWebServer() {
   server.on("/relay", handle_relay);
   // registering /button for button trigger
   server.on("/button", handle_button);
+  // registering /notify?backend=<aws|telegram> for a test notification
+  server.on("/notify", handle_notify);
   // registering /restart for arduino&esp32 restart
   server.on("/restart", handle_restart);
   // not found
@@ -481,9 +494,9 @@ static int httpsSend(const char* name, const String& url,
   return code;
 }
 
-static void sendAwsNotification(const char* source) {
+static int sendAwsNotification(const char* source) {
   (void)source; // current Lambda contract is fully encoded in serverRequest
-  httpsSend("AWS", serverRequest, "GET");
+  return httpsSend("AWS", serverRequest, "GET");
 }
 
 // Percent-encode a String for safe inclusion in a URL querystring value.
@@ -512,13 +525,35 @@ static String urlEncode(const String& in) {
   return out;
 }
 
-static void sendTelegramNotification(const char* source) {
+static int sendTelegramNotification(const char* source) {
   String text = String("Doorbell ring (") + source + ") @ " +
                 getDateString() + " " + getTimeString();
   String url  = String("https://api.telegram.org/bot") + TELEGRAM_BOT_TOKEN +
                 "/sendMessage?chat_id=" + TELEGRAM_CHAT_ID +
                 "&text=" + urlEncode(text);
-  httpsSend("Telegram", url, "GET");
+  return httpsSend("Telegram", url, "GET");
+}
+
+// Fires one backend regardless of its enabled flag, so credentials can be verified.
+void handle_notify() {
+  String backend = server.arg("backend");
+  Serial.println("ESP32 Web Server: Sending test notification...");
+  Serial.println("GET /notify?backend=" + backend);
+  int code;
+  if (backend == "aws") {
+    code = sendAwsNotification("test");
+  } else if (backend == "telegram") {
+    code = sendTelegramNotification("test");
+  } else {
+    server.send(400, "application/json",
+                "{\"action\":\"notify\",\"result\":false,\"error\":\"unknown backend\"}");
+    return;
+  }
+  bool ok = code >= 200 && code < 300;
+  server.send(ok ? 200 : 502, "application/json",
+              String("{\"action\":\"notify\",\"backend\":\"") + backend +
+              "\",\"result\":" + (ok ? "true" : "false") +
+              ",\"code\":" + code + "}");
 }
 
 // Fan out a notification to every enabled backend, in sequence.
