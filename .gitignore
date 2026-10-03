@@ -30,3 +30,6 @@ fp-info-cache
 # Exported BOM files
 *.xml
 *.csv
+
+# Firmware secrets (copy arduino/secrets.example.h to arduino/secrets.h)
+arduino/secrets.h

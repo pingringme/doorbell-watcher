@@ -3,6 +3,12 @@
 
 #include <Arduino.h>
 
+#if __has_include("secrets.h")
+#include "secrets.h"
+#else
+#error "Missing arduino/secrets.h: copy secrets.example.h to secrets.h and fill in your values."
+#endif
+
 // ---------------------------------------------------------------------------
 // Firmware
 // ---------------------------------------------------------------------------
@@ -33,24 +39,7 @@
 const bool notify_aws_enabled      = false;
 const bool notify_telegram_enabled = false;
 
-// ---------------------------------------------------------------------------
-// HTTP backend (AWS Lambda)
-// ---------------------------------------------------------------------------
-#define HTTP_SERVER_URL    "***"   // full HTTPS endpoint of the Lambda function URL / API Gateway (no query string)
-#define HTTP_SECURITY_CODE "***"   // shared secret validated server-side; rejects requests from anyone who finds the URL
-#define HTTP_BELL_UUID     "***"   // identifies which physical doorbell is ringing so the Lambda can route to the right recipients
-
-// ---------------------------------------------------------------------------
-// Telegram backend (Bot API)
-// ---------------------------------------------------------------------------
-#define TELEGRAM_BOT_TOKEN "***"   // bot token issued by @BotFather; treat as a secret
-#define TELEGRAM_CHAT_ID   "***"   // destination chat: numeric user/group id, or @channelname for public channels
-
-// ---------------------------------------------------------------------------
-// WiFi credentials
-// ---------------------------------------------------------------------------
-#define WIFI_SSID     "***"        // 2.4 GHz network name (ESP32 does not support 5 GHz)
-#define WIFI_PASSWORD "***"        // WPA2/WPA3 passphrase
+// Credentials and endpoints (WiFi, AWS Lambda, Telegram, MQTT password) live in secrets.h.
 
 // ---------------------------------------------------------------------------
 // NTP
@@ -75,7 +64,7 @@ const bool  mqtt_enabled                = true;                                 
 const char* mqtt_server_hostname_mdns   = "homeassistant";                                                 // broker hostname resolved via mDNS (homeassistant.local); change to a static IP if mDNS is unreliable
 const int   mqtt_port                   = 1883;                                                            // plain MQTT (not TLS); keep on a trusted LAN only
 const char* mqtt_auth_user              = "admin";                                                         // broker username
-const char* mqtt_auth_pass              = "***";                                                           // broker password
+const char* mqtt_auth_pass              = MQTT_AUTH_PASS;                                                           // broker password
 const char* mqtt_device_id              = "pingringme-esp32";                                              // MQTT client id, also used as the Home Assistant device identifier
 const char* mqtt_unique_id              = "pingringme_doorbell";                                           // stable unique id for the HA entities; do not change after install or HA will create duplicates
 const char* mqtt_topic_state            = "pingringme/doorbell/state";                                     // binary_sensor payload: "ON" while button held, "OFF" on release
